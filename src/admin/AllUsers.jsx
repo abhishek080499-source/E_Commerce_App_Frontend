@@ -12,7 +12,7 @@ function AllUsers() {
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const res = await fetch("http://localhost:5000/users", {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/users`, {
           credentials: "include",
         });
         const data = await res.json();
@@ -37,7 +37,7 @@ function AllUsers() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/users/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/users/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

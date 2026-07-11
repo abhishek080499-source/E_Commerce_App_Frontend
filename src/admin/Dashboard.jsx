@@ -53,7 +53,7 @@ function Dashboard() {
   // fetch products
   async function fetchProducts() {
     try {
-      const response = await fetch("http://localhost:5000/products", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/products`, {
         credentials: "include",
       });
       const data = await response.json();
@@ -67,7 +67,7 @@ function Dashboard() {
   async function deleteProduct(id) {
     if (!window.confirm("Delete this product?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/products/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/products/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -102,7 +102,7 @@ function Dashboard() {
       formData.append("price", editPrice);
       if (editImage) formData.append("image", editImage);
 
-      const res = await fetch(`http://localhost:5000/products/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/products/${id}`, {
         method: "PUT",
         body: formData,
         credentials: "include",
@@ -132,7 +132,7 @@ function Dashboard() {
   // fetch categories
   async function fetchCategories() {
     try {
-      const res = await fetch("http://localhost:5000/categories", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/categories`, {
         credentials: "include",
       });
       const data = await res.json();
@@ -235,7 +235,7 @@ function Dashboard() {
     },
   };
 
-  // पहले values calculate करें
+
 const totalProducts = filteredProducts.length;
 const highestPrice = Math.max(...filteredProducts.map((p) => p.price), 0);
 const averagePrice = (
@@ -244,7 +244,7 @@ const averagePrice = (
 ).toFixed(2);
 const totalRevenue = filteredProducts.reduce((sum, p) => sum + p.price, 0);
 
-// ✅ useCountUp hook से animated values
+
 const animatedTotalProducts = useCountUp(totalProducts, 1200);
 const animatedHighestPrice = useCountUp(highestPrice, 1200);
 const animatedAveragePrice = useCountUp(Number(averagePrice), 1200);

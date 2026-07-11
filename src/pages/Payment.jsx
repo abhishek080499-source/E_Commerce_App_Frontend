@@ -56,7 +56,7 @@ const Payment = () => {
       localStorage.setItem("customerInfo", JSON.stringify(customer));
 
       const res = await fetch(
-        `${process.env.REACT_APP_API_URL || "http://localhost:5000"}/payment/pay`,
+        `${process.env.REACT_APP_API_URL}/payment/pay`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -78,7 +78,7 @@ const Payment = () => {
 
       setBillNumber(data.bill.billNumber);
       setPdfUrl(
-        `${process.env.REACT_APP_API_URL || "http://localhost:5000"}${data.pdfUrl}`
+        `${process.env.REACT_APP_API_URL}${data.pdfUrl}`
       );
       setBillGenerated(true);
 
@@ -101,7 +101,7 @@ const Payment = () => {
   const handleLogout = async () => {
     try {
       await fetch(
-        `${process.env.REACT_APP_API_URL || "http://localhost:5000"}/auth/logout`,
+        `${process.env.REACT_APP_API_URL}/auth/logout`,
         { method: "POST", credentials: "include" }
       );
     } catch (err) {

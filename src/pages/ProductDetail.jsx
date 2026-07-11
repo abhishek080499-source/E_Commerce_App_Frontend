@@ -23,7 +23,7 @@ const username = user?.username;
   const handleLogout = async () => {
     try {
       await fetch(
-        `${process.env.REACT_APP_API_URL || "http://localhost:5000"}/auth/logout`,
+        `${process.env.REACT_APP_API_URL}/auth/logout`,
         { method: "POST", credentials: "include" }
       );
     } catch (err) {
@@ -39,7 +39,7 @@ const username = user?.username;
       try {
         setLoading(true);
         const res = await fetch(
-          `${process.env.REACT_APP_API_URL || "http://localhost:5000"}/products/${id}`,
+          `${process.env.REACT_APP_API_URL}/products/${id}`,
           { credentials: "include" }
         );
         const data = await res.json();

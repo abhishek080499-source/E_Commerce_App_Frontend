@@ -39,7 +39,7 @@ function CartPage() {
   const handleLogout = async () => {
     try {
       await fetch(
-        `${process.env.REACT_APP_API_URL || "http://localhost:5000"}/auth/logout`,
+        `${process.env.REACT_APP_API_URL}/auth/logout`,
         { method: "POST", credentials: "include" }
       );
     } catch (err) {

@@ -14,7 +14,7 @@ function AllProducts() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:5000/products", {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/products`, {
           method: "GET",
           credentials: "include",
         });
@@ -28,7 +28,7 @@ function AllProducts() {
 
     const fetchCategories = async () => {
       try {
-        const res = await fetch("http://localhost:5000/categories", {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/categories`, {
           credentials: "include",
         });
         const data = await res.json();

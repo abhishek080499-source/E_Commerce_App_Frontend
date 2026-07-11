@@ -12,7 +12,7 @@ function Notifications() {
   useEffect(() => {
     async function fetchNotifications() {
       try {
-        const res = await fetch("http://localhost:5000/notifications", {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications`, {
           credentials: "include",
         });
         const data = await res.json();
@@ -33,7 +33,7 @@ function Notifications() {
 
   const deleteNotification = async (id) => {
     try {
-      await fetch(`http://localhost:5000/notifications/${id}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/notifications/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -48,7 +48,7 @@ function Notifications() {
     if (!newQuantity) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/products/${productId}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/products/${productId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

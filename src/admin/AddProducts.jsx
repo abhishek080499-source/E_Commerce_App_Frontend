@@ -30,7 +30,7 @@ function AddProducts() {
 
   async function fetchProducts() {
     try {
-      const response = await fetch("http://localhost:5000/products", { credentials: "include" });
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/products`, { credentials: "include" });
       const data = await response.json();
       setProducts(data);
     } catch (err) {
@@ -40,7 +40,7 @@ function AddProducts() {
 
   async function fetchCategories() {
     try {
-      const response = await fetch("http://localhost:5000/categories", { credentials: "include" });
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/categories`, { credentials: "include" });
       const data = await response.json();
       setCategories(data);
       console.log("Fetched categories:", data);
@@ -64,7 +64,7 @@ function AddProducts() {
       formData.append("categoryId", categoryId);
       if (image) formData.append("image", image);
 
-      const res = await fetch("http://localhost:5000/products", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/products`, {
         method: "POST",
         body: formData,
         credentials: "include",
@@ -91,7 +91,7 @@ function AddProducts() {
   async function deleteProduct(id) {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/products/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/products/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -124,7 +124,7 @@ function AddProducts() {
       formData.append("categoryId", editCategoryId);
       if (editImage) formData.append("image", editImage);
 
-      const res = await fetch(`http://localhost:5000/products/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/products/${id}`, {
         method: "PUT",
         body: formData,
         credentials: "include",

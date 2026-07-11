@@ -23,7 +23,7 @@ function ProductDetail() {
 
   async function fetchProducts() {
     try {
-      const response = await fetch("http://localhost:5000/products", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/products`, {
         credentials: "include",
       });
       const data = await response.json();
@@ -44,7 +44,7 @@ function ProductDetail() {
 
   async function fetchCategories() {
     try {
-      const res = await fetch("http://localhost:5000/categories", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/categories`, {
         credentials: "include",
       });
       const cats = await res.json();

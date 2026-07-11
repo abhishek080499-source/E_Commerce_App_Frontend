@@ -17,7 +17,7 @@ function Bills() {
   useEffect(() => {
     async function fetchBills() {
       try {
-        const res = await fetch("http://localhost:5000/payment/all", {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/payment/all`, {
           credentials: "include",
         });
         const data = await res.json();

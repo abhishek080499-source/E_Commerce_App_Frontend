@@ -18,7 +18,7 @@ function Header({ toggleSidebar }) {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:5000/auth/logout", {
+      await fetch(`${process.env.REACT_APP_API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -53,7 +53,7 @@ function Header({ toggleSidebar }) {
   useEffect(() => {
     async function fetchNotifications() {
       try {
-        const res = await fetch("http://localhost:5000/notifications", {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications`, {
           credentials: "include",
         });
         const data = await res.json();
