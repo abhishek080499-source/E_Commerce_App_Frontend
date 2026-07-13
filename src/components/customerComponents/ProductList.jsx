@@ -1,29 +1,40 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import ProductCard from "./ProductCard";
-import Pagination from "../Pagination"; 
+import Pagination from "../Pagination";
 
-function ProductList({ products, loading, addToCart }) {
+function ProductList({
+  products,
+  loading,
+  addToCart,
+  wishlistItems,
+}) {
   const [currentPage, setCurrentPage] = useState(1);
+
   const itemsPerPage = 8;
 
   const totalPages = Math.ceil(products.length / itemsPerPage);
 
-  // ✅ Reset page when products change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [products]);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentProducts = products.slice(startIndex, startIndex + itemsPerPage);
+
+  const currentProducts = products.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   return (
     <main className="flex-grow max-w-7xl mx-auto px-4 py-6">
-      {/* Heading with background color responsive to theme */}
-      <h2 className="text-2xl font-bold mb-6 text-center 
-                     bg-white dark:bg-gray-900 
-                     text-gray-900 dark:text-white 
-                     hover:text-blue-600 dark:hover:text-yellow-400 
-                     transition duration-300 py-2 rounded">
+      {/* Heading */}
+      <h2
+        className="
+          text-2xl font-bold mb-6 text-center
+          bg-white dark:bg-gray-900
+          text-gray-900 dark:text-white
+          hover:text-blue-600 dark:hover:text-yellow-400
+          transition duration-300
+          py-2 rounded
+        "
+      >
         Featured Products
       </h2>
 
@@ -39,6 +50,7 @@ function ProductList({ products, loading, addToCart }) {
                 key={product._id}
                 product={product}
                 addToCart={addToCart}
+                wishlistItems={wishlistItems}
               />
             ))}
           </div>
@@ -46,7 +58,7 @@ function ProductList({ products, loading, addToCart }) {
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={(newPage) => setCurrentPage(newPage)}
+            onPageChange={setCurrentPage}
           />
         </>
       ) : (

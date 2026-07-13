@@ -11,7 +11,7 @@ function MyOrders() {
   
 const cartItems = useSelector((state) => state.cart.items);
 
-console.log("Redux Cart:", cartItems);
+
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);

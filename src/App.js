@@ -34,6 +34,7 @@ import MyOrders from "./pages/MyOrder";
 
 
 import ProtectedRoute from "./components/ProtectedRoute"
+import WishlistPage from "./pages/WishlistPage"
 
 
 function App() {
@@ -107,6 +108,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["customer"]}>
               <MyOrders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/wishlist"
+          element={
+            <ProtectedRoute allowedRoles={["customer"]}>
+              <WishlistPage />
             </ProtectedRoute>
           }
         />

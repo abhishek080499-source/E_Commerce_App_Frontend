@@ -109,7 +109,7 @@ function CustomerNavbar({
 
   return (
     <nav className="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-lg transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div className="w-full px-4 py-4 flex justify-between items-center">
 
         {/* Logo */}
         <h1 className="text-xl md:text-2xl font-bold">
@@ -187,6 +187,17 @@ function CustomerNavbar({
             }
           >
             My Orders
+          </NavLink>
+
+          <NavLink
+            to="/wishlist"
+            className={({ isActive }) =>
+              isActive
+                ? activeClasses
+                : baseClasses
+            }
+          >
+            Wishlist
           </NavLink>
 
           <NavLink
@@ -296,6 +307,15 @@ function CustomerNavbar({
             }
           >
              My Orders
+          </NavLink>
+          <NavLink
+            to="/wishlist"
+            onClick={() => setIsOpen(false)}
+            className={({ isActive }) =>
+              `${isActive ? activeClasses : baseClasses} block`
+            }
+          >
+             Wishlist
           </NavLink>
 
           {/* About */}
