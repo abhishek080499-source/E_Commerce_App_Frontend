@@ -179,6 +179,17 @@ function CustomerNavbar({
           </NavLink>
 
           <NavLink
+            to="/my-orders"
+            className={({ isActive }) =>
+              isActive
+                ? activeClasses
+                : baseClasses
+            }
+          >
+            My Orders
+          </NavLink>
+
+          <NavLink
             to="/about-us"
             className={({ isActive }) =>
               isActive
@@ -276,6 +287,15 @@ function CustomerNavbar({
             }
           >
              Shop
+          </NavLink>
+          <NavLink
+            to="/my-orders"
+            onClick={() => setIsOpen(false)}
+            className={({ isActive }) =>
+              `${isActive ? activeClasses : baseClasses} block`
+            }
+          >
+             My Orders
           </NavLink>
 
           {/* About */}

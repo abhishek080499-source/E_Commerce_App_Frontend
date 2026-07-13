@@ -23,10 +23,10 @@ function CategoryNavbar({ selectedCategory, setSelectedCategory }) {
   const topCategories = categories.slice(0, 10);
 
   return (
-    <div
+    <div  
+            // sticky  top-[72px]   /* adjust to your navbar  if stick
       className="
-        sticky 
-        top-[72px]   /* adjust to your navbar height */
+        height */
         z-40 
         bg-white dark:bg-gray-900 
         shadow-md 

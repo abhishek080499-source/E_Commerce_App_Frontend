@@ -30,6 +30,7 @@ import CartPage from "./pages/CartPage";
 import Payment from "./pages/Payment";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
+import MyOrders from "./pages/MyOrder";
 
 
 import ProtectedRoute from "./components/ProtectedRoute"
@@ -98,6 +99,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["customer"]}>
               <Shop />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-orders"
+          element={
+            <ProtectedRoute allowedRoles={["customer"]}>
+              <MyOrders />
             </ProtectedRoute>
           }
         />

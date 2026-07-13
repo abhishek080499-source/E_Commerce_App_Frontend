@@ -39,6 +39,37 @@ useEffect(() => {
 }, [startDate, endDate]);
 
 
+
+
+const updateStatus = async (billNumber, status) => {
+  try {
+    const res = await fetch(
+      `${process.env.REACT_APP_API_URL}/payment/status/${billNumber}`,
+      {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.success) {
+      setBills((prev) =>
+        prev.map((bill) =>
+          bill.billNumber === billNumber
+            ? { ...bill, status }
+            : bill
+        )
+      );
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
   // Filter bills by date range
   const filteredBills = bills.filter((bill) => {
     const billDate = new Date(bill.createdAt);
@@ -129,7 +160,11 @@ useEffect(() => {
               <th className="px-6 py-3 text-left text-sm sm:text-base dark:text-white">Phone</th>
               <th className="px-6 py-3 text-left text-sm sm:text-base dark:text-white">Total (₹)</th>
               <th className="px-6 py-3 text-left text-sm sm:text-base dark:text-white">Created At</th>
+              <th className="px-6 py-3 text-left text-sm sm:text-base dark:text-white">
+              Status
+              </th>
               <th className="px-6 py-3 text-left text-sm sm:text-base dark:text-white">Actions</th>
+              
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800">
@@ -144,49 +179,117 @@ useEffect(() => {
                     <td className="px-6 py-4 dark:text-white">
                       {new Date(bill.createdAt).toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 space-x-2">
-                      <button
-                        onClick={() =>
-                          setExpandedBill(expandedBill === bill._id ? null : bill._id)
-                        }
-                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs sm:text-sm transition transform hover:scale-105 focus:ring-2 focus:ring-green-400"
-                      >
-                        {expandedBill === bill._id ? "Hide Details" : "Show Details"}
-                      </button>
-                     <button
-  onClick={() =>
-    window.open(
-      `${process.env.REACT_APP_API_URL}/payment/invoice/${bill.billNumber}`,
-      "_blank",
-      "noopener,noreferrer"
-    )
-  }
-  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs sm:text-sm transition transform hover:scale-105 focus:ring-2 focus:ring-blue-400"
->
-  Download PDF
-</button>
-                    </td>
-                  </tr>
 
-                  {expandedBill === bill._id && (
-                    <tr>
-                      <td colSpan="6" className="bg-gray-50 dark:bg-gray-700 px-6 py-4">
-                        <h4 className="font-semibold mb-2 dark:text-white">Products:</h4>
-                        <ul className="list-disc list-inside dark:text-gray-200">
-                          {bill.items.map((item, idx) => (
-                            <li key={idx}>
-                              {item.productName} (x{item.quantity}) – ₹{item.price}
-                            </li>
-                          ))}
-                        </ul>
-                      </td>
-                    </tr>
-                  )}
+<td className="px-6 py-4">
+  <span
+    className={`px-3 py-1 rounded-full text-xs font-semibold text-white
+      ${
+        bill.status === "Pending"
+          ? "bg-yellow-500"
+          : bill.status === "Processing"
+          ? "bg-blue-600"
+          : "bg-green-600"
+      }`}
+  >
+    {bill.status}
+  </span>
+</td>
+
+              <td className="px-6 py-4">
+  <div className="flex flex-wrap gap-2 items-center">
+
+    {/* Show / Hide Details */}
+    <button
+      onClick={() =>
+        setExpandedBill(expandedBill === bill._id ? null : bill._id)
+      }
+      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs sm:text-sm transition transform hover:scale-105"
+    >
+      {expandedBill === bill._id ? "Hide Details" : "Show Details"}
+    </button>
+
+    {/* Download PDF */}
+    <button
+      onClick={() =>
+        window.open(
+          `${process.env.REACT_APP_API_URL}/payment/invoice/${bill.billNumber}`,
+          "_blank",
+          "noopener,noreferrer"
+        )
+      }
+      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs sm:text-sm transition transform hover:scale-105"
+    >
+      Download PDF
+    </button>
+
+    {/* Order Status */}
+   <select
+  value={bill.status}
+  disabled={bill.status === "Delivered"}
+  onChange={(e) => updateStatus(bill.billNumber, e.target.value)}
+  className={`px-2 py-1 rounded text-white text-xs sm:text-sm ${
+    bill.status === "Pending"
+      ? "bg-yellow-500"
+      : bill.status === "Processing"
+      ? "bg-blue-500"
+      : "bg-green-600"
+  } ${bill.status === "Delivered" ? "opacity-70 cursor-not-allowed" : ""}`}
+>
+  <option value="Pending">Pending</option>
+  <option value="Processing">Processing</option>
+  <option value="Delivered">Delivered</option>
+</select>
+  </div>
+</td>
+</tr>
+
+{expandedBill === bill._id && (
+  <tr>
+    <td
+      colSpan="7"
+      className="bg-gray-50 dark:bg-gray-700 px-6 py-4"
+    >
+      <div className="mb-3">
+        <span className="font-semibold dark:text-white">
+          Order Status:
+        </span>{" "}
+        <span
+          className={`px-2 py-1 rounded text-white text-xs
+            ${
+              bill.status === "Pending"
+                ? "bg-yellow-500"
+                : bill.status === "Processing"
+                ? "bg-blue-500"
+                : "bg-green-600"
+            }`}
+        >
+          {bill.status}
+        </span>
+      </div>
+
+      <h4 className="font-semibold mb-2 dark:text-white">
+        Products:
+      </h4>
+
+      <ul className="list-disc list-inside dark:text-gray-200">
+        {bill.items.map((item, idx) => (
+          <li key={idx}>
+            {item.productName} (x{item.quantity}) – ₹{item.price}
+          </li>
+        ))}
+      </ul>
+    </td>
+  </tr>
+)}
+
                 </React.Fragment>
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="text-center py-4 dark:text-white">
+                <td
+                  colSpan="7"
+                  className="px-6 py-4 text-center text-gray-500 dark:text-gray-300"
+                >
                   No bills found.
                 </td>
               </tr>
