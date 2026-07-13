@@ -153,14 +153,18 @@ useEffect(() => {
                       >
                         {expandedBill === bill._id ? "Hide Details" : "Show Details"}
                       </button>
-                      <a
-  href={`${process.env.REACT_APP_API_URL}/payment/invoice/${bill.billNumber}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs sm:text-sm transition transform hover:scale-105 focus:ring-2 focus:ring-blue-400 inline-block"
-                      >
-                        Download PDF
-                      </a>
+                     <button
+  onClick={() =>
+    window.open(
+      `${process.env.REACT_APP_API_URL}/payment/invoice/${bill.billNumber}`,
+      "_blank",
+      "noopener,noreferrer"
+    )
+  }
+  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs sm:text-sm transition transform hover:scale-105 focus:ring-2 focus:ring-blue-400"
+>
+  Download PDF
+</button>
                     </td>
                   </tr>
 
