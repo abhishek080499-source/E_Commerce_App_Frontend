@@ -361,10 +361,11 @@ function AddProducts() {
 
       await fetchProducts();
       alert("Product deleted successfully.");
-
-    } catch (error) {
-      console.error("Delete error:", error);
-    }
+      
+} catch (error) {
+  console.error("Delete error:", error);
+  alert("Failed to delete product. Please try again.");
+}
   }
 
   // ============================================================
