@@ -118,47 +118,20 @@ const Payment = () => {
   };
 
   // Download invoice
-  const downloadInvoice = async () => {
-    if (!pdfUrl) {
-      alert("Invoice PDF is not available.");
-      return;
-    }
+const downloadInvoice = () => {
+  if (!pdfUrl) {
+    alert("Invoice PDF is not available.");
+    return;
+  }
 
-    try {
-      // Fetch the PDF from Cloudinary
-      const response = await fetch(pdfUrl);
+  console.log("Invoice URL:", pdfUrl);
 
-      if (!response.ok) {
-        throw new Error("Failed to download invoice.");
-      }
-
-      const blob = await response.blob();
-
-      // Create temporary download URL
-      const blobUrl = window.URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = blobUrl;
-      link.download = `${billNumber}.pdf`;
-
-      document.body.appendChild(link);
-      link.click();
-
-      document.body.removeChild(link);
-
-      // Clean up temporary URL
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      console.error("Invoice download error:", error);
-
-      // Fallback: open Cloudinary PDF
-      window.open(
-        pdfUrl,
-        "_blank",
-        "noopener,noreferrer"
-      );
-    }
-  };
+  window.open(
+    pdfUrl,
+    "_blank",
+    "noopener,noreferrer"
+  );
+};
 
   const handleLogout = async () => {
     try {
