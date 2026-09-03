@@ -1,16 +1,17 @@
+
 // src/pages/Payment.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CustomerNavbar from "../components/customerComponents/CustomerNavbar";
 import Footer from "../components/customerComponents/Footer";
 import { useSelector, useDispatch } from "react-redux";
-import { clearCart } from "../redux/cartSlice"; // ✅ Redux action
+import { clearCart } from "../redux/cartSlice";
 
 const Payment = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // ✅ Redux cart is the single source of truth
+  // Redux cart is the single source of truth
   const cartItems = useSelector((state) => state.cart.items);
 
   const [grandTotal, setGrandTotal] = useState(0);
@@ -19,14 +20,18 @@ const Payment = () => {
   const [billNumber, setBillNumber] = useState("");
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [paidAmount, setPaidAmount] = useState(0);
 
-  // ✅ Get logged-in user info
+  // Get logged-in user info
   const user = JSON.parse(localStorage.getItem("user"));
   const username = user?.username;
 
-  // ✅ Initialize customer info from localStorage or user object
+  // Initialize customer info from localStorage or user object
   const [customer, setCustomer] = useState(() => {
-    const savedCustomer = JSON.parse(localStorage.getItem("customerInfo"));
+    const savedCustomer = JSON.parse(
+      localStorage.getItem("customerInfo")
+    );
+
     return (
       savedCustomer || {
         name: user?.username || "",
@@ -43,23 +48,32 @@ const Payment = () => {
       (sum, item) => sum + item.price * item.quantity,
       0
     );
+
     setGrandTotal(total);
   }, [cartItems]);
 
   const handleChange = (e) => {
-    setCustomer({ ...customer, [e.target.name]: e.target.value });
+    setCustomer({
+      ...customer,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handlePayment = async () => {
     try {
-      // ✅ Save customer info
-      localStorage.setItem("customerInfo", JSON.stringify(customer));
+      // Save customer info
+      localStorage.setItem(
+        "customerInfo",
+        JSON.stringify(customer)
+      );
 
       const res = await fetch(
         `${process.env.REACT_APP_API_URL}/payment/pay`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           credentials: "include",
           body: JSON.stringify({
             customerName: customer.name,
@@ -67,22 +81,31 @@ const Payment = () => {
             phone: customer.phone,
             email: customer.email,
             pincode: customer.pincode,
-            items: cartItems, 
+            items: cartItems,
             grandTotal,
           }),
         }
       );
 
-      if (!res.ok) throw new Error("Payment request failed");
       const data = await res.json();
 
+      if (!res.ok) {
+        throw new Error(
+          data.error || "Payment request failed"
+        );
+      }
+
       setBillNumber(data.bill.billNumber);
-      setPdfUrl(
-        `${process.env.REACT_APP_API_URL}${data.pdfUrl}`
-      );
+
+      // IMPORTANT:
+      // Backend now returns the complete Cloudinary URL.
+      // Do NOT prepend REACT_APP_API_URL.
+      setPdfUrl(data.pdfUrl);
+      setPaidAmount(grandTotal);
+
       setBillGenerated(true);
 
-      // ✅ Clear cart via Redux
+      // Clear cart via Redux
       dispatch(clearCart());
 
       setTimeout(() => {
@@ -90,26 +113,70 @@ const Payment = () => {
       }, 15000);
     } catch (err) {
       console.error("Payment error:", err);
-      alert("Payment failed!");
+      alert(err.message || "Payment failed!");
     }
   };
 
-  const downloadInvoice = () => {
-    window.open(pdfUrl, "_blank");
+  // Download invoice
+  const downloadInvoice = async () => {
+    if (!pdfUrl) {
+      alert("Invoice PDF is not available.");
+      return;
+    }
+
+    try {
+      // Fetch the PDF from Cloudinary
+      const response = await fetch(pdfUrl);
+
+      if (!response.ok) {
+        throw new Error("Failed to download invoice.");
+      }
+
+      const blob = await response.blob();
+
+      // Create temporary download URL
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `${billNumber}.pdf`;
+
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+
+      // Clean up temporary URL
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Invoice download error:", error);
+
+      // Fallback: open Cloudinary PDF
+      window.open(
+        pdfUrl,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    }
   };
 
   const handleLogout = async () => {
     try {
       await fetch(
         `${process.env.REACT_APP_API_URL}/auth/logout`,
-        { method: "POST", credentials: "include" }
+        {
+          method: "POST",
+          credentials: "include",
+        }
       );
     } catch (err) {
       console.error("Logout error:", err);
     }
+
     localStorage.removeItem("user");
     localStorage.removeItem("customerInfo");
     localStorage.removeItem("theme");
+
     navigate("/login");
   };
 
@@ -117,7 +184,10 @@ const Payment = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <CustomerNavbar
         username={username}
-        cartCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+        cartCount={cartItems.reduce(
+          (sum, item) => sum + item.quantity,
+          0
+        )}
         onLogout={handleLogout}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -137,25 +207,51 @@ const Payment = () => {
             {/* Customer Form */}
             <div className="space-y-4">
               {[
-                { name: "name", label: "Full Name", type: "text", placeholder: "Enter your name" },
-                { name: "address", label: "Address", type: "text", placeholder: "Enter your address" },
-                { name: "phone", label: "Mobile Number", type: "number", placeholder: "Enter your mobile number" },
-                { name: "email", label: "Email", type: "email", placeholder: "Enter your email" },
-                { name: "pincode", label: "Pincode", type: "number", placeholder: "Enter your pincode" },
+                {
+                  name: "name",
+                  label: "Full Name",
+                  type: "text",
+                  placeholder: "Enter your name",
+                },
+                {
+                  name: "address",
+                  label: "Address",
+                  type: "text",
+                  placeholder: "Enter your address",
+                },
+                {
+                  name: "phone",
+                  label: "Mobile Number",
+                  type: "number",
+                  placeholder: "Enter your mobile number",
+                },
+                {
+                  name: "email",
+                  label: "Email",
+                  type: "email",
+                  placeholder: "Enter your email",
+                },
+                {
+                  name: "pincode",
+                  label: "Pincode",
+                  type: "number",
+                  placeholder: "Enter your pincode",
+                },
               ].map((field) => (
                 <div key={field.name}>
                   <label className="block font-medium mb-1 text-gray-700 dark:text-gray-300">
                     {field.label}
                   </label>
+
                   <input
                     type={field.type}
                     name={field.name}
                     value={customer[field.name] || ""}
                     onChange={handleChange}
                     placeholder={field.placeholder}
-                    className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 
-                               text-gray-900 dark:text-white 
-                               focus:ring-2 focus:ring-blue-500 focus:outline-none 
+                    className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-800
+                               text-gray-900 dark:text-white
+                               focus:ring-2 focus:ring-blue-500 focus:outline-none
                                transition hover:border-blue-400"
                   />
                 </div>
@@ -173,13 +269,28 @@ const Payment = () => {
                     <th className="px-3 py-2">Total (₹)</th>
                   </tr>
                 </thead>
+
                 <tbody className="bg-white dark:bg-gray-800 dark:text-white">
                   {cartItems.map((item, index) => (
-                    <tr key={index} className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                      <td className="px-3 py-2">{item.itemName}</td>
-                      <td className="px-3 py-2">₹{item.price}</td>
-                      <td className="px-3 py-2">{item.quantity}</td>
-                      <td className="px-3 py-2">₹{item.price * item.quantity}</td>
+                    <tr
+                      key={index}
+                      className="border-b hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                    >
+                      <td className="px-3 py-2">
+                        {item.itemName}
+                      </td>
+
+                      <td className="px-3 py-2">
+                        ₹{item.price}
+                      </td>
+
+                      <td className="px-3 py-2">
+                        {item.quantity}
+                      </td>
+
+                      <td className="px-3 py-2">
+                        ₹{item.price * item.quantity}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -202,14 +313,30 @@ const Payment = () => {
             <h4 className="text-xl font-bold text-green-700 dark:text-green-300 mb-2">
               ✅ Payment Successful!
             </h4>
+
             <p className="text-gray-700 dark:text-gray-300">
               Your bill has been generated and stored in backend.
             </p>
-            <p><strong>Bill Number:</strong> {billNumber}</p>
-            <p><strong>Customer Name:</strong> {customer.name}</p>
-            <p><strong>Address:</strong> {customer.address}</p>
-            <p><strong>Phone:</strong> {customer.phone}</p>
-            <p><strong>Total Paid:</strong> ₹{grandTotal}</p>
+
+            <p>
+              <strong>Bill Number:</strong> {billNumber}
+            </p>
+
+            <p>
+              <strong>Customer Name:</strong> {customer.name}
+            </p>
+
+            <p>
+              <strong>Address:</strong> {customer.address}
+            </p>
+
+            <p>
+              <strong>Phone:</strong> {customer.phone}
+            </p>
+
+            <p>
+              <strong>Total Paid:</strong> ₹{paidAmount}
+            </p>
 
             {pdfUrl && (
               <button
@@ -241,3 +368,4 @@ const Payment = () => {
 };
 
 export default Payment;
+
