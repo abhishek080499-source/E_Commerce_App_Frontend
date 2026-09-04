@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect, useRef } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 function CustomerNavbar({
   username,
@@ -10,6 +9,7 @@ function CustomerNavbar({
   setSearchQuery,
 }) {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -20,17 +20,15 @@ function CustomerNavbar({
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
+  const mobileUsername =
+    username && username.length > 10
+      ? `${username.slice(0, 10)}...`
+      : username;
 
-const mobileUsername =
-  username && username.length > 10
-    ? `${username.slice(0, 10)}...`
-    : username;
-
-const desktopUsername =
-  username && username.length > 18
-    ? `${username.slice(0, 15)}...`
-    : username;
-
+  const desktopUsername =
+    username && username.length > 18
+      ? `${username.slice(0, 15)}...`
+      : username;
 
   // Classic navigation link
   const baseClasses =
@@ -38,6 +36,42 @@ const desktopUsername =
 
   const activeClasses =
     "relative font-semibold text-yellow-500 dark:text-yellow-400 py-2";
+
+  // -------------------------
+  // Search
+  // -------------------------
+  const handleSearch = () => {
+    const search = searchQuery.trim();
+
+    if (search) {
+      navigate(`/shop?search=${encodeURIComponent(search)}`);
+    } else {
+      navigate("/shop");
+    }
+
+    setIsOpen(false);
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  // -------------------------
+  // Search Input Change
+  // -------------------------
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+
+    setSearchQuery(value);
+
+    // If user clears the search while already on Shop,
+    // immediately remove the search query and show all products.
+    if (!value.trim() && location.pathname === "/shop") {
+      navigate("/shop");
+    }
+  };
 
   // -------------------------
   // Dark Mode
@@ -110,10 +144,10 @@ const desktopUsername =
 
     document.addEventListener("keydown", handleKey);
 
-    return () =>
+    return () => {
       document.removeEventListener("keydown", handleKey);
+    };
   }, []);
-
 
   return (
     <nav
@@ -134,55 +168,53 @@ const desktopUsername =
           min-h-[68px]
         "
       >
-       
-{/* Logo */}
-<h1
-  className="
-    text-xl sm:text-2xl
-    font-bold
-    tracking-tight
-    whitespace-nowrap
-    min-w-0
-  "
->
-  <span
-    className="
-      text-yellow-500
-      dark:text-yellow-400
-      transition-colors duration-300
-  "
-  >
-    Shopify
-  </span>
+        {/* Logo */}
+        <h1
+          className="
+            text-xl sm:text-2xl
+            font-bold
+            tracking-tight
+            whitespace-nowrap
+            min-w-0
+          "
+        >
+          <span
+            className="
+              text-yellow-500
+              dark:text-yellow-400
+              transition-colors duration-300
+            "
+          >
+            Shopify
+          </span>
 
-  {/* Mobile */}
-  <span
-    className="
-      inline sm:hidden
-      text-gray-700
-      dark:text-gray-200
-      font-medium
-      text-sm
-      ml-1
-    "
-  >
-    | {mobileUsername}
-  </span>
+          {/* Mobile */}
+          <span
+            className="
+              inline sm:hidden
+              text-gray-700
+              dark:text-gray-200
+              font-medium
+              text-sm
+              ml-1
+            "
+          >
+            | {mobileUsername}
+          </span>
 
-  {/* Desktop */}
-  <span
-    className="
-      hidden sm:inline
-      text-gray-700
-      dark:text-gray-200
-      font-medium
-    "
-  >
-    {" "}
-    | Welcome, {desktopUsername}
-  </span>
-</h1>
-
+          {/* Desktop */}
+          <span
+            className="
+              hidden sm:inline
+              text-gray-700
+              dark:text-gray-200
+              font-medium
+            "
+          >
+            {" "}
+            | Welcome, {desktopUsername}
+          </span>
+        </h1>
 
         {/* Hamburger */}
         <button
@@ -229,7 +261,6 @@ const desktopUsername =
 
         {/* Desktop Menu */}
         <div className="hidden lg:flex items-center gap-5 xl:gap-6">
-
           {/* Home */}
           <NavLink
             to="/customer"
@@ -299,7 +330,8 @@ const desktopUsername =
               type="text"
               placeholder="Search products..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
+              onKeyDown={handleSearchKeyDown}
               className="
                 px-3 py-2
                 w-44 xl:w-52
@@ -313,6 +345,7 @@ const desktopUsername =
             />
 
             <button
+              onClick={handleSearch}
               className="
                 bg-gray-900
                 hover:bg-yellow-500
@@ -444,7 +477,6 @@ const desktopUsername =
         `}
       >
         <div className="p-5 space-y-2">
-
           {/* Mobile Links */}
           <NavLink
             to="/customer"
@@ -542,7 +574,8 @@ const desktopUsername =
               type="text"
               placeholder="Search products..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
+              onKeyDown={handleSearchKeyDown}
               className="
                 flex-1
                 min-w-0
@@ -557,6 +590,7 @@ const desktopUsername =
             />
 
             <button
+              onClick={handleSearch}
               className="
                 bg-gray-900
                 hover:bg-yellow-500
@@ -575,7 +609,6 @@ const desktopUsername =
 
           {/* Cart + Theme + Logout */}
           <div className="flex items-center justify-center gap-3 pt-4">
-
             {/* Cart */}
             <NavLink
               to="/cart"

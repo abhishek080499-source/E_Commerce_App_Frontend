@@ -1,4 +1,3 @@
-
 // src/pages/CustomerHome.jsx
 
 import React, { useState, useEffect } from "react";
@@ -124,21 +123,16 @@ function CustomerHome() {
   // ===============================
   // Filter Products
   // ===============================
+  // Search is NOT performed here.
+  // Search is handled by CustomerNavbar
+  // and redirects to /shop?search=...
   const filteredProducts = products.filter((product) => {
-    const matchesSearch =
-      product.itemName
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      product.description
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase());
-
     const matchesCategory =
       selectedCategory === "All"
         ? true
         : product.category?._id === selectedCategory;
 
-    return matchesSearch && matchesCategory;
+    return matchesCategory;
   });
 
   // ===============================
@@ -179,7 +173,9 @@ function CustomerHome() {
     }
   });
 
-  const featuredProducts = Array.from(categoryMap.values()).slice(0, 10);
+  const featuredProducts = Array.from(
+    categoryMap.values()
+  ).slice(0, 10);
 
   // ===============================
   // Render

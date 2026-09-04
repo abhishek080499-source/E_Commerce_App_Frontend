@@ -1,3 +1,4 @@
+// src/pages/MyOrders.jsx
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +20,9 @@ function MyOrders() {
   const username =
     user?.username || localStorage.getItem("username") || "Customer";
 
+  // ===============================
+  // Fetch Orders
+  // ===============================
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -47,30 +51,24 @@ function MyOrders() {
     }
   };
 
+  // ===============================
+  // Logout
+  // ===============================
   const handleLogout = async () => {
     try {
-      await fetch(`${process.env.REACT_APP_API_URL}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
+      await fetch(
+        `${process.env.REACT_APP_API_URL}/auth/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
     } catch (err) {
       console.error(err);
     }
 
     navigate("/login");
   };
-
-  const filteredOrders = orders.filter((bill) => {
-    const query = searchQuery.toLowerCase();
-
-    return (
-      bill.billNumber?.toLowerCase().includes(query) ||
-      bill.customerName?.toLowerCase().includes(query) ||
-      bill.items?.some((item) =>
-        item.productName?.toLowerCase().includes(query)
-      )
-    );
-  });
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-950 flex flex-col">
@@ -88,7 +86,6 @@ function MyOrders() {
 
       {/* ================= MAIN CONTENT ================= */}
       <div className="max-w-6xl mx-auto w-full flex-1 p-6">
-
         {loading ? (
           /* ================= LOADING ================= */
           <div className="min-h-[70vh] flex items-center justify-center">
@@ -124,7 +121,7 @@ function MyOrders() {
               My Orders
             </h1>
 
-            {filteredOrders.length === 0 ? (
+            {orders.length === 0 ? (
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
                 <h2 className="text-xl font-semibold dark:text-white">
                   No Orders Found
@@ -132,7 +129,7 @@ function MyOrders() {
               </div>
             ) : (
               <div className="space-y-6">
-                {filteredOrders.map((bill) => (
+                {orders.map((bill) => (
                   <div
                     key={bill._id}
                     className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6"
@@ -144,7 +141,9 @@ function MyOrders() {
                         </h2>
 
                         <p className="text-gray-500 dark:text-gray-300">
-                          {new Date(bill.createdAt).toLocaleString()}
+                          {new Date(
+                            bill.createdAt
+                          ).toLocaleString()}
                         </p>
                       </div>
 
@@ -174,7 +173,8 @@ function MyOrders() {
                           </div>
 
                           <div>
-                            Qty : <strong>{item.quantity}</strong>
+                            Qty :{" "}
+                            <strong>{item.quantity}</strong>
                           </div>
 
                           <div>₹{item.total}</div>

@@ -1,4 +1,3 @@
-
 // src/pages/Wishlist.jsx
 
 import React, { useEffect, useState } from "react";
@@ -18,7 +17,10 @@ function Wishlist() {
   // ==============================
   // Redux State
   // ==============================
-  const cartItems = useSelector((state) => state.cart?.items || []);
+  const cartItems = useSelector(
+    (state) => state.cart?.items || []
+  );
+
   const wishlistItems = useSelector(
     (state) => state.wishlist?.items || []
   );
@@ -77,17 +79,9 @@ function Wishlist() {
     } catch (err) {
       console.log(err);
     }
+
     navigate("/login");
   };
-
-  // ==============================
-  // Search Wishlist
-  // ==============================
-  const filteredWishlist = wishlistItems.filter((item) =>
-    item.productId?.itemName
-      ?.toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
 
   // ==============================
   // Cart Count
@@ -119,6 +113,7 @@ function Wishlist() {
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
 
             <div>
+
               {/* Breadcrumb */}
               <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-3">
                 <button
@@ -161,7 +156,7 @@ function Wishlist() {
         {/* ================= PRODUCTS ================= */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
 
-          {filteredWishlist.length === 0 ? (
+          {wishlistItems.length === 0 ? (
 
             /* ================= EMPTY ================= */
             <div className="min-h-[55vh] flex items-center justify-center">
@@ -173,15 +168,11 @@ function Wishlist() {
                 </div>
 
                 <h2 className="mt-6 text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">
-                  {wishlistItems.length === 0
-                    ? "Your Wishlist is Empty"
-                    : "No Products Found"}
+                  Your Wishlist is Empty
                 </h2>
 
                 <p className="mt-3 text-gray-500 dark:text-gray-400 leading-6">
-                  {wishlistItems.length === 0
-                    ? "Save products you love and easily find them here whenever you're ready to shop."
-                    : "Try searching with a different product name."}
+                  Save products you love and easily find them here whenever you're ready to shop.
                 </p>
 
                 <button
@@ -200,7 +191,7 @@ function Wishlist() {
             /* ================= PRODUCT GRID ================= */
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
 
-              {filteredWishlist.map((item) => {
+              {wishlistItems.map((item) => {
                 const product = item.productId;
 
                 if (!product) return null;
@@ -236,4 +227,3 @@ function Wishlist() {
 }
 
 export default Wishlist;
-

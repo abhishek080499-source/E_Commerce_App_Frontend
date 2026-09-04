@@ -1,7 +1,9 @@
-
 import React, { useState, useEffect } from "react";
+
 import { Doughnut, Bar } from "react-chartjs-2";
+
 import Notification from "../admin/Notifications";
+
 import useCountUp from "../components/hook/UseCountUp";
 
 import {
@@ -25,7 +27,9 @@ ChartJS.register(
 );
 
 const MAX_DIGITS = 8;
+
 const MAX_QUANTITY = 10000;
+
 const MAX_PRICE = 5000000;
 
 const EMPTY_ERRORS = {
@@ -38,7 +42,9 @@ const EMPTY_ERRORS = {
 
 function Dashboard() {
   const [page, setPage] = useState(1);
+
   const [products, setProducts] = useState([]);
+
   const [editingId, setEditingId] = useState(null);
 
   // edit states
@@ -55,20 +61,41 @@ function Dashboard() {
 
   // search + notifications
   const [searchTerm, setSearchTerm] = useState("");
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
   const [showNotifications, setShowNotifications] = useState(false);
 
   // errors
-  const [editErrors, setEditErrors] = useState(EMPTY_ERRORS);
+  const [editErrors, setEditErrors] = useState({
+    ...EMPTY_ERRORS,
+  });
+
   const [editErrorMessage, setEditErrorMessage] = useState("");
+
   const [isUpdating, setIsUpdating] = useState(false);
 
   const resultsPerPage = 5;
 
-  // fetch products
-  async function fetchProducts() {
+  // sort state
+  const [sortOrder, setSortOrder] = useState("none");
+
+  // =========================
+  // FETCH PRODUCTS
+  // =========================
+
+  async function fetchProducts(search = "") {
     try {
+      const queryParams = new URLSearchParams();
+
+      if (search.trim()) {
+        queryParams.append("search", search.trim());
+      }
+
+      const queryString = queryParams.toString();
+
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/products`,
+        `${process.env.REACT_APP_API_URL}/products${
+          queryString ? `?${queryString}` : ""
+        }`,
         {
           credentials: "include",
         }
@@ -78,13 +105,63 @@ function Dashboard() {
 
       if (response.ok) {
         setProducts(Array.isArray(data) ? data : []);
+      } else {
+        setProducts([]);
       }
     } catch (err) {
       console.error("Error fetching products:", err);
+      setProducts([]);
     }
   }
 
-  // delete product
+  // =========================
+  // HANDLE SEARCH
+  // =========================
+
+  async function handleSearch() {
+    const trimmedSearch = searchTerm.trim();
+
+    setAppliedSearchTerm(trimmedSearch);
+    setPage(1);
+
+    await fetchProducts(trimmedSearch);
+  }
+
+  // =========================
+  // HANDLE SEARCH INPUT
+  // =========================
+
+  async function handleSearchChange(e) {
+    const value = e.target.value;
+
+    setSearchTerm(value);
+
+    /*
+      If the user clears the search after a search
+      has already been applied, fetch all products.
+    */
+    if (!value.trim() && appliedSearchTerm) {
+      setAppliedSearchTerm("");
+      setPage(1);
+
+      await fetchProducts("");
+    }
+  }
+
+  // =========================
+  // HANDLE ENTER KEY
+  // =========================
+
+  function handleSearchKeyDown(e) {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  }
+
+  // =========================
+  // DELETE PRODUCT
+  // =========================
+
   async function deleteProduct(id) {
     if (!window.confirm("Delete this product?")) {
       return;
@@ -106,7 +183,8 @@ function Dashboard() {
         return;
       }
 
-      await fetchProducts();
+      await fetchProducts(appliedSearchTerm);
+
       alert("Product deleted successfully.");
     } catch (err) {
       console.error("Delete error:", err);
@@ -114,30 +192,43 @@ function Dashboard() {
     }
   }
 
-  // start edit
+  // =========================
+  // START EDIT
+  // =========================
+
   function startEdit(product) {
     setEditingId(product._id);
+
     setEditItemName(product.itemName || "");
+
     setEditDescription(product.description || "");
+
     setEditQuantity(product.availableQuantity ?? "");
+
     setEditPrice(product.price ?? "");
+
     setEditImage(null);
+
     setEditCategoryId(product.category?._id || "");
 
-    setEditErrors({ ...EMPTY_ERRORS });
+    setEditErrors({
+      ...EMPTY_ERRORS,
+    });
+
     setEditErrorMessage("");
   }
 
-  // numeric input helper
+  // =========================
+  // NUMERIC INPUT HELPER
+  // =========================
+
   function getNumericValue(value, decimal = false) {
     let cleaned = value.replace(/[^\d.]/g, "");
 
     if (!decimal) {
       cleaned = cleaned.replace(/\./g, "");
 
-      return cleaned.length <= MAX_DIGITS
-        ? cleaned
-        : null;
+      return cleaned.length <= MAX_DIGITS ? cleaned : null;
     }
 
     const parts = cleaned.split(".");
@@ -146,18 +237,17 @@ function Dashboard() {
       cleaned = `${parts[0]}.${parts.slice(1).join("")}`;
     }
 
-    const [integer = "", decimalPart = ""] =
-      cleaned.split(".");
+    const [integer = "", decimalPart = ""] = cleaned.split(".");
 
-    const digitCount =
-      integer.length + decimalPart.length;
+    const digitCount = integer.length + decimalPart.length;
 
-    return digitCount <= MAX_DIGITS
-      ? cleaned
-      : null;
+    return digitCount <= MAX_DIGITS ? cleaned : null;
   }
 
-  // validation
+  // =========================
+  // VALIDATION
+  // =========================
+
   function validateProduct({
     name,
     description,
@@ -165,9 +255,12 @@ function Dashboard() {
     price,
     category,
   }) {
-    const newErrors = { ...EMPTY_ERRORS };
+    const newErrors = {
+      ...EMPTY_ERRORS,
+    };
 
     const numericQuantity = Number(quantity);
+
     const numericPrice = Number(price);
 
     if (!name.trim()) {
@@ -215,101 +308,121 @@ function Dashboard() {
     );
   }
 
-  // save edit
-async function saveEdit(id) {
-  setEditErrorMessage("");
+  // =========================
+  // SAVE EDIT
+  // =========================
 
-  const validationErrors = validateProduct({
-    name: editItemName,
-    description: editDescription,
-    quantity: editQuantity,
-    price: editPrice,
-    category: editCategoryId,
-  });
+  async function saveEdit(id) {
+    setEditErrorMessage("");
 
-  setEditErrors(validationErrors);
+    const validationErrors = validateProduct({
+      name: editItemName,
+      description: editDescription,
+      quantity: editQuantity,
+      price: editPrice,
+      category: editCategoryId,
+    });
 
-  if (hasErrors(validationErrors)) {
-    return;
-  }
+    setEditErrors(validationErrors);
 
-  setIsUpdating(true);
-
-  try {
-    const formData = new FormData();
-
-    formData.append("itemName", editItemName.trim());
-    formData.append("description", editDescription.trim());
-    formData.append(
-      "availableQuantity",
-      Number(editQuantity)
-    );
-    formData.append("categoryId", editCategoryId);
-    formData.append("price", Number(editPrice));
-
-    if (editImage) {
-      formData.append("image", editImage);
-    }
-
-    const res = await fetch(
-      `${process.env.REACT_APP_API_URL}/products/${id}`,
-      {
-        method: "PUT",
-        body: formData,
-        credentials: "include",
-      }
-    );
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      const message =
-        data?.error || "Failed to update product.";
-
-      if (isDuplicateNameError(message)) {
-        setEditErrors((prev) => ({
-          ...prev,
-          itemName: message,
-        }));
-
-        setEditErrorMessage("");
-      } else {
-        setEditErrorMessage(message);
-      }
-
+    if (hasErrors(validationErrors)) {
       return;
     }
 
-    alert("Product updated successfully.");
+    setIsUpdating(true);
 
-    setEditingId(null);
-    setEditImage(null);
-    setEditErrors({ ...EMPTY_ERRORS });
-    setEditErrorMessage("");
+    try {
+      const formData = new FormData();
 
-    await fetchProducts();
-  } catch (err) {
-    console.error("Update error:", err);
+      formData.append("itemName", editItemName.trim());
 
-    setEditErrorMessage(
-      "Something went wrong. Please try again."
-    );
-  } finally {
-    setIsUpdating(false);
+      formData.append(
+        "description",
+        editDescription.trim()
+      );
+
+      formData.append(
+        "availableQuantity",
+        Number(editQuantity)
+      );
+
+      formData.append("categoryId", editCategoryId);
+
+      formData.append("price", Number(editPrice));
+
+      if (editImage) {
+        formData.append("image", editImage);
+      }
+
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/products/${id}`,
+        {
+          method: "PUT",
+          body: formData,
+          credentials: "include",
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        const message =
+          data?.error || "Failed to update product.";
+
+        if (isDuplicateNameError(message)) {
+          setEditErrors((prev) => ({
+            ...prev,
+            itemName: message,
+          }));
+
+          setEditErrorMessage("");
+        } else {
+          setEditErrorMessage(message);
+        }
+
+        return;
+      }
+
+      alert("Product updated successfully.");
+
+      setEditingId(null);
+
+      setEditImage(null);
+
+      setEditErrors({
+        ...EMPTY_ERRORS,
+      });
+
+      setEditErrorMessage("");
+
+      await fetchProducts(appliedSearchTerm);
+    } catch (err) {
+      console.error("Update error:", err);
+
+      setEditErrorMessage(
+        "Something went wrong. Please try again."
+      );
+    } finally {
+      setIsUpdating(false);
+    }
   }
-}
-  // helper: generate distinct colors
+
+  // =========================
+  // GENERATE CHART COLORS
+  // =========================
+
   function generateColors(count) {
     return Array.from({ length: count }, (_, i) => {
       const hue = (i * 360) / count;
+
       return `hsl(${hue}, 70%, 50%)`;
     });
   }
 
-  // sort state
-  const [sortOrder, setSortOrder] = useState("none");
+  // =========================
+  // FETCH CATEGORIES
+  // =========================
 
-  // fetch categories
   async function fetchCategories() {
     try {
       const res = await fetch(
@@ -329,23 +442,24 @@ async function saveEdit(id) {
     }
   }
 
-  // call both fetches on mount
+  // =========================
+  // INITIAL FETCH
+  // =========================
+
   useEffect(() => {
     fetchProducts();
     fetchCategories();
   }, []);
 
-  // filter + sort products
+  // =========================
+  // FILTER + SORT PRODUCTS
+  // =========================
+
   const filteredProducts = products
     .filter((p) =>
       selectedCategory === "All"
         ? true
         : p.category?._id === selectedCategory
-    )
-    .filter((p) =>
-      p.itemName
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
     )
     .sort((a, b) => {
       if (sortOrder === "low") {
@@ -373,11 +487,19 @@ async function saveEdit(id) {
     page * resultsPerPage
   );
 
+  // Reset pagination when filters/search change
   useEffect(() => {
     setPage(1);
-  }, [selectedCategory, sortOrder]);
+  }, [
+    selectedCategory,
+    sortOrder,
+    appliedSearchTerm,
+  ]);
 
-  // category-level data
+  // =========================
+  // CATEGORY LEVEL DATA
+  // =========================
+
   const categoryMap = new Map();
 
   filteredProducts.forEach((p) => {
@@ -397,7 +519,9 @@ async function saveEdit(id) {
       Number(p.availableQuantity) || 0;
   });
 
-  const categoryLabels = Array.from(categoryMap.keys());
+  const categoryLabels = Array.from(
+    categoryMap.keys()
+  );
 
   const categoryPriceValues = Array.from(
     categoryMap.values()
@@ -407,12 +531,17 @@ async function saveEdit(id) {
     categoryMap.values()
   ).map((c) => c.totalQuantity);
 
-  // Doughnut chart (Revenue by Category)
+  // =========================
+  // DOUGHNUT CHART
+  // =========================
+
   const doughnutData = {
     labels: categoryLabels,
+
     datasets: [
       {
         data: categoryPriceValues,
+
         backgroundColor: generateColors(
           categoryLabels.length
         ),
@@ -422,8 +551,11 @@ async function saveEdit(id) {
 
   const doughnutOptions = {
     responsive: true,
+
     maintainAspectRatio: false,
+
     cutout: "30%",
+
     plugins: {
       legend: {
         display: false,
@@ -431,13 +563,19 @@ async function saveEdit(id) {
     },
   };
 
-  // Bar chart (Stock by Category)
+  // =========================
+  // BAR CHART
+  // =========================
+
   const barData = {
     labels: categoryLabels,
+
     datasets: [
       {
         label: "Category Quantities",
+
         data: categoryQuantityValues,
+
         backgroundColor: "#42A5F5",
       },
     ],
@@ -445,13 +583,19 @@ async function saveEdit(id) {
 
   const barOptions = {
     responsive: true,
+
     maintainAspectRatio: false,
+
     scales: {
       y: {
         beginAtZero: true,
       },
     },
   };
+
+  // =========================
+  // SUMMARY DATA
+  // =========================
 
   const totalProducts = filteredProducts.length;
 
@@ -500,8 +644,10 @@ async function saveEdit(id) {
       </h1>
 
       {/* Summary Cards */}
+
       <div className="grid gap-6 mb-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
         {/* Total Products */}
+
         <div
           className="bg-white dark:bg-gray-800 p-4 rounded shadow
                      transition transform hover:scale-105 hover:shadow-lg"
@@ -516,6 +662,7 @@ async function saveEdit(id) {
         </div>
 
         {/* Highest Price */}
+
         <div
           className="bg-white dark:bg-gray-800 p-4 rounded shadow
                      transition transform hover:scale-105 hover:shadow-lg"
@@ -530,6 +677,7 @@ async function saveEdit(id) {
         </div>
 
         {/* Average Price */}
+
         <div
           className="bg-white dark:bg-gray-800 p-4 rounded shadow
                      transition transform hover:scale-105 hover:shadow-lg"
@@ -544,6 +692,7 @@ async function saveEdit(id) {
         </div>
 
         {/* Total Revenue */}
+
         <div
           className="bg-white dark:bg-gray-800 p-4 rounded shadow
                      transition transform hover:scale-105 hover:shadow-lg"
@@ -559,18 +708,31 @@ async function saveEdit(id) {
       </div>
 
       {/* Search + Filters */}
+
       <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded shadow flex flex-col gap-4">
-        <input
-          type="text"
-          placeholder="Search products..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full border px-3 py-2 rounded dark:bg-gray-700 dark:text-gray-200"
-        />
+        <div className="flex flex-col sm:flex-row gap-2">
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            onKeyDown={handleSearchKeyDown}
+            className="w-full border px-3 py-2 rounded dark:bg-gray-700 dark:text-gray-200"
+          />
+
+          <button
+            onClick={handleSearch}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Search
+          </button>
+        </div>
 
         {/* Filters row */}
+
         <div className="flex flex-col sm:flex-row gap-4">
           {/* Category Filter */}
+
           <select
             value={selectedCategory}
             onChange={(e) =>
@@ -578,7 +740,9 @@ async function saveEdit(id) {
             }
             className="flex-1 border px-3 py-2 rounded dark:bg-gray-700 dark:text-gray-200"
           >
-            <option value="All">All Categories</option>
+            <option value="All">
+              All Categories
+            </option>
 
             {categories.map((cat) => (
               <option key={cat._id} value={cat._id}>
@@ -588,6 +752,7 @@ async function saveEdit(id) {
           </select>
 
           {/* Sort Filter */}
+
           <select
             value={sortOrder}
             onChange={(e) =>
@@ -595,19 +760,27 @@ async function saveEdit(id) {
             }
             className="flex-1 border px-3 py-2 rounded dark:bg-gray-700 dark:text-gray-200"
           >
-            <option value="none">Sort by</option>
+            <option value="none">
+              Sort by
+            </option>
+
             <option value="low">
               Price: Low → High
             </option>
+
             <option value="high">
               Price: High → Low
             </option>
-            <option value="newest">Newest</option>
+
+            <option value="newest">
+              Newest
+            </option>
           </select>
         </div>
       </div>
 
       {/* Notifications Toggle */}
+
       <div className="flex justify-between items-center mb-4 flex-col sm:flex-row gap-2">
         <button
           onClick={() =>
@@ -624,6 +797,7 @@ async function saveEdit(id) {
       {showNotifications && <Notification />}
 
       {/* Products Table */}
+
       <div className="overflow-x-auto mb-8">
         <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden">
           <thead className="bg-gray-100 dark:bg-gray-700">
@@ -659,326 +833,355 @@ async function saveEdit(id) {
           </thead>
 
           <tbody className="bg-white dark:bg-gray-800 dark:text-white">
-            {paginatedProducts.map((p) => (
-              <tr
-                key={p._id}
-                className="border-t"
-              >
-                {/* Image */}
-                <td className="px-4 py-2 align-top">
-                  {editingId === p._id ? (
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) =>
-                        setEditImage(
-                          e.target.files[0] || null
-                        )
-                      }
-                    />
-                  ) : p.imageUrl ? (
-                    <img
-                      src={p.imageUrl}
-                      alt={p.itemName}
-                      className="h-16 w-16 object-cover rounded dark:text-black"
-                    />
-                  ) : (
-                    "No image"
-                  )}
-                </td>
+            {paginatedProducts.length > 0 ? (
+              paginatedProducts.map((p) => (
+                <tr
+                  key={p._id}
+                  className="border-t"
+                >
+                  {/* Image */}
 
-                {/* Item Name */}
-                <td className="px-4 py-2 align-top">
-                  {editingId === p._id ? (
-                    <div className="min-w-[180px]">
+                  <td className="px-4 py-2 align-top">
+                    {editingId === p._id ? (
                       <input
-                        value={editItemName}
-                        onChange={(e) => {
-                          setEditItemName(
-                            e.target.value
-                          );
-
-                          setEditErrors((prev) => ({
-                            ...prev,
-                            itemName: "",
-                          }));
-
-                          setEditErrorMessage("");
-                        }}
-                        className={`w-full border px-2 py-1 rounded dark:text-black ${
-                          editErrors.itemName
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          setEditImage(
+                            e.target.files[0] || null
+                          )
+                        }
                       />
-
-                      {editErrors.itemName && (
-                        <ErrorText>
-                          {editErrors.itemName}
-                        </ErrorText>
-                      )}
-                    </div>
-                  ) : (
-                    p.itemName
-                  )}
-                </td>
-
-                {/* Description */}
-                <td className="px-4 py-2 align-top">
-                  {editingId === p._id ? (
-                    <div className="min-w-[220px]">
-                      <textarea
-                        value={editDescription}
-                        onChange={(e) => {
-                          setEditDescription(
-                            e.target.value
-                          );
-
-                          setEditErrors((prev) => ({
-                            ...prev,
-                            description: "",
-                          }));
-
-                          setEditErrorMessage("");
-                        }}
-                        className={`w-full border px-2 py-1 rounded dark:text-black ${
-                          editErrors.description
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
+                    ) : p.imageUrl ? (
+                      <img
+                        src={p.imageUrl}
+                        alt={p.itemName}
+                        className="h-16 w-16 object-cover rounded dark:text-black"
                       />
+                    ) : (
+                      "No image"
+                    )}
+                  </td>
 
-                      {editErrors.description && (
-                        <ErrorText>
-                          {editErrors.description}
-                        </ErrorText>
-                      )}
-                    </div>
-                  ) : (
-                    p.description || "—"
-                  )}
-                </td>
+                  {/* Item Name */}
 
-                {/* Quantity */}
-                <td className="px-4 py-2 align-top">
-                  {editingId === p._id ? (
-                    <div className="min-w-[120px]">
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        value={editQuantity}
-                        onChange={(e) => {
-                          const value =
-                            getNumericValue(
+                  <td className="px-4 py-2 align-top">
+                    {editingId === p._id ? (
+                      <div className="min-w-[180px]">
+                        <input
+                          value={editItemName}
+                          onChange={(e) => {
+                            setEditItemName(
                               e.target.value
                             );
 
-                          if (value === null) {
-                            setEditErrors(
-                              (prev) => ({
-                                ...prev,
-                                quantity:
-                                  "Quantity cannot contain more than 8 digits.",
-                              })
-                            );
+                            setEditErrors((prev) => ({
+                              ...prev,
+                              itemName: "",
+                            }));
 
-                            return;
-                          }
+                            setEditErrorMessage("");
+                          }}
+                          className={`w-full border px-2 py-1 rounded dark:text-black ${
+                            editErrors.itemName
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                        />
 
-                          setEditQuantity(value);
-
-                          setEditErrors((prev) => ({
-                            ...prev,
-                            quantity: "",
-                          }));
-
-                          setEditErrorMessage("");
-                        }}
-                        className={`w-full border px-2 py-1 rounded dark:text-black ${
-                          editErrors.quantity
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                      />
-
-                      {editErrors.quantity && (
-                        <ErrorText>
-                          {editErrors.quantity}
-                        </ErrorText>
-                      )}
-                    </div>
-                  ) : (
-                    p.availableQuantity ?? 0
-                  )}
-                </td>
-
-                {/* Price */}
-                <td className="px-4 py-2 align-top">
-                  {editingId === p._id ? (
-                    <div className="min-w-[130px]">
-                      <input
-                        type="text"
-                        inputMode="decimal"
-                        pattern="[0-9.]*"
-                        value={editPrice}
-                        onChange={(e) => {
-                          const value =
-                            getNumericValue(
-                              e.target.value,
-                              true
-                            );
-
-                          if (value === null) {
-                            setEditErrors(
-                              (prev) => ({
-                                ...prev,
-                                price:
-                                  "Price cannot contain more than 8 digits.",
-                              })
-                            );
-
-                            return;
-                          }
-
-                          setEditPrice(value);
-
-                          setEditErrors((prev) => ({
-                            ...prev,
-                            price: "",
-                          }));
-
-                          setEditErrorMessage("");
-                        }}
-                        className={`w-full border px-2 py-1 rounded dark:text-black ${
-                          editErrors.price
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                      />
-
-                      {editErrors.price && (
-                        <ErrorText>
-                          {editErrors.price}
-                        </ErrorText>
-                      )}
-                    </div>
-                  ) : (
-                    `₹ ${p.price}`
-                  )}
-                </td>
-
-                {/* Category */}
-                <td className="px-4 py-2 align-top">
-                  {editingId === p._id ? (
-                    <div className="min-w-[160px]">
-                      <select
-                        value={editCategoryId}
-                        onChange={(e) => {
-                          setEditCategoryId(
-                            e.target.value
-                          );
-
-                          setEditErrors((prev) => ({
-                            ...prev,
-                            categoryId: "",
-                          }));
-
-                          setEditErrorMessage("");
-                        }}
-                        className={`w-full border px-2 py-1 rounded dark:text-black ${
-                          editErrors.categoryId
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                      >
-                        <option value="">
-                          Select Category
-                        </option>
-
-                        {categories.map((cat) => (
-                          <option
-                            key={cat._id}
-                            value={cat._id}
-                          >
-                            {cat.name}
-                          </option>
-                        ))}
-                      </select>
-
-                      {editErrors.categoryId && (
-                        <ErrorText>
-                          {editErrors.categoryId}
-                        </ErrorText>
-                      )}
-                    </div>
-                  ) : (
-                    p.category?.name ||
-                    "No category"
-                  )}
-                </td>
-
-                {/* Actions */}
-                <td className="px-4 py-2 align-top">
-                  {editingId === p._id ? (
-                    <div className="flex flex-wrap gap-2 min-w-[160px]">
-<button
-  onClick={() => saveEdit(p._id)}
-  disabled={isUpdating}
-  className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
->
-  {isUpdating ? "Saving..." : "Save"}
-</button>
-
-                      <button
-                        onClick={() => {
-                          setEditingId(null);
-                          setEditImage(null);
-                          setEditErrors({
-                            ...EMPTY_ERRORS,
-                          });
-                          setEditErrorMessage("");
-                        }}
-                        className="px-3 py-1 bg-gray-400 text-white rounded hover:bg-gray-500"
-                      >
-                        Cancel
-                      </button>
-
-                      {editErrorMessage && (
-                        <div className="w-full">
+                        {editErrors.itemName && (
                           <ErrorText>
-                            {editErrorMessage}
+                            {editErrors.itemName}
                           </ErrorText>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="flex flex-wrap gap-2 min-w-[150px]">
-                      <button
-                        onClick={() => startEdit(p)}
-                        className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-                      >
-                        Edit
-                      </button>
+                        )}
+                      </div>
+                    ) : (
+                      p.itemName
+                    )}
+                  </td>
 
-                      <button
-                        onClick={() =>
-                          deleteProduct(p._id)
-                        }
-                        className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  )}
+                  {/* Description */}
+
+                  <td className="px-4 py-2 align-top">
+                    {editingId === p._id ? (
+                      <div className="min-w-[220px]">
+                        <textarea
+                          value={editDescription}
+                          onChange={(e) => {
+                            setEditDescription(
+                              e.target.value
+                            );
+
+                            setEditErrors((prev) => ({
+                              ...prev,
+                              description: "",
+                            }));
+
+                            setEditErrorMessage("");
+                          }}
+                          className={`w-full border px-2 py-1 rounded dark:text-black ${
+                            editErrors.description
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                        />
+
+                        {editErrors.description && (
+                          <ErrorText>
+                            {editErrors.description}
+                          </ErrorText>
+                        )}
+                      </div>
+                    ) : (
+                      p.description || "—"
+                    )}
+                  </td>
+
+                  {/* Quantity */}
+
+                  <td className="px-4 py-2 align-top">
+                    {editingId === p._id ? (
+                      <div className="min-w-[120px]">
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          value={editQuantity}
+                          onChange={(e) => {
+                            const value =
+                              getNumericValue(
+                                e.target.value
+                              );
+
+                            if (value === null) {
+                              setEditErrors(
+                                (prev) => ({
+                                  ...prev,
+                                  quantity:
+                                    "Quantity cannot contain more than 8 digits.",
+                                })
+                              );
+
+                              return;
+                            }
+
+                            setEditQuantity(value);
+
+                            setEditErrors((prev) => ({
+                              ...prev,
+                              quantity: "",
+                            }));
+
+                            setEditErrorMessage("");
+                          }}
+                          className={`w-full border px-2 py-1 rounded dark:text-black ${
+                            editErrors.quantity
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                        />
+
+                        {editErrors.quantity && (
+                          <ErrorText>
+                            {editErrors.quantity}
+                          </ErrorText>
+                        )}
+                      </div>
+                    ) : (
+                      p.availableQuantity ?? 0
+                    )}
+                  </td>
+
+                  {/* Price */}
+
+                  <td className="px-4 py-2 align-top">
+                    {editingId === p._id ? (
+                      <div className="min-w-[130px]">
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          pattern="[0-9.]*"
+                          value={editPrice}
+                          onChange={(e) => {
+                            const value =
+                              getNumericValue(
+                                e.target.value,
+                                true
+                              );
+
+                            if (value === null) {
+                              setEditErrors(
+                                (prev) => ({
+                                  ...prev,
+                                  price:
+                                    "Price cannot contain more than 8 digits.",
+                                })
+                              );
+
+                              return;
+                            }
+
+                            setEditPrice(value);
+
+                            setEditErrors((prev) => ({
+                              ...prev,
+                              price: "",
+                            }));
+
+                            setEditErrorMessage("");
+                          }}
+                          className={`w-full border px-2 py-1 rounded dark:text-black ${
+                            editErrors.price
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                        />
+
+                        {editErrors.price && (
+                          <ErrorText>
+                            {editErrors.price}
+                          </ErrorText>
+                        )}
+                      </div>
+                    ) : (
+                      `₹ ${p.price}`
+                    )}
+                  </td>
+
+                  {/* Category */}
+
+                  <td className="px-4 py-2 align-top">
+                    {editingId === p._id ? (
+                      <div className="min-w-[160px]">
+                        <select
+                          value={editCategoryId}
+                          onChange={(e) => {
+                            setEditCategoryId(
+                              e.target.value
+                            );
+
+                            setEditErrors((prev) => ({
+                              ...prev,
+                              categoryId: "",
+                            }));
+
+                            setEditErrorMessage("");
+                          }}
+                          className={`w-full border px-2 py-1 rounded dark:text-black ${
+                            editErrors.categoryId
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                        >
+                          <option value="">
+                            Select Category
+                          </option>
+
+                          {categories.map((cat) => (
+                            <option
+                              key={cat._id}
+                              value={cat._id}
+                            >
+                              {cat.name}
+                            </option>
+                          ))}
+                        </select>
+
+                        {editErrors.categoryId && (
+                          <ErrorText>
+                            {editErrors.categoryId}
+                          </ErrorText>
+                        )}
+                      </div>
+                    ) : (
+                      p.category?.name ||
+                      "No category"
+                    )}
+                  </td>
+
+                  {/* Actions */}
+
+                  <td className="px-4 py-2 align-top">
+                    {editingId === p._id ? (
+                      <div className="flex flex-wrap gap-2 min-w-[160px]">
+                        <button
+                          onClick={() =>
+                            saveEdit(p._id)
+                          }
+                          disabled={isUpdating}
+                          className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isUpdating
+                            ? "Saving..."
+                            : "Save"}
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setEditingId(null);
+                            setEditImage(null);
+
+                            setEditErrors({
+                              ...EMPTY_ERRORS,
+                            });
+
+                            setEditErrorMessage("");
+                          }}
+                          className="px-3 py-1 bg-gray-400 text-white rounded hover:bg-gray-500"
+                        >
+                          Cancel
+                        </button>
+
+                        {editErrorMessage && (
+                          <div className="w-full">
+                            <ErrorText>
+                              {editErrorMessage}
+                            </ErrorText>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap gap-2 min-w-[150px]">
+                        <button
+                          onClick={() =>
+                            startEdit(p)
+                          }
+                          className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            deleteProduct(p._id)
+                          }
+                          className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="7"
+                  className="px-4 py-8 text-center text-gray-500 dark:text-gray-300"
+                >
+                  {appliedSearchTerm
+                    ? `No products found for "${appliedSearchTerm}"`
+                    : "No products found."}
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
       {/* Pagination */}
+
       <div className="flex justify-between items-center mb-8">
         <span className="text-sm text-gray-600 dark:text-gray-300">
           Page {page} of{" "}
@@ -1012,12 +1215,14 @@ async function saveEdit(id) {
       </div>
 
       {/* Charts Section */}
+
       <h2 className="text-xl font-bold mb-6 dark:text-white">
         Charts
       </h2>
 
       <div className="grid gap-6 mb-8 grid-cols-1 md:grid-cols-2">
         {/* Revenue Doughnut */}
+
         <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
           <h3 className="text-lg font-semibold mb-4 dark:text-gray-200">
             Revenue
@@ -1056,6 +1261,7 @@ async function saveEdit(id) {
         </div>
 
         {/* Stock Bar Chart */}
+
         <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
           <h3 className="text-lg font-semibold mb-4 dark:text-gray-200">
             Stock by Category
@@ -1089,6 +1295,7 @@ async function saveEdit(id) {
 }
 
 // ERROR COMPONENT
+
 function ErrorText({ children }) {
   return (
     <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -1098,4 +1305,3 @@ function ErrorText({ children }) {
 }
 
 export default Dashboard;
-

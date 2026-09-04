@@ -1,8 +1,7 @@
-
 // src/pages/Shop.jsx
 
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { addToCart } from "../redux/cartSlice";
@@ -17,13 +16,20 @@ function Shop() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // ==========================
+  // URL Search Parameters
+  // ==========================
+  const [searchParams] = useSearchParams();
+
+  const searchFromUrl = searchParams.get("search") || "";
+
   // Redux
   const cartItems = useSelector((state) => state.cart.items);
   const wishlistItems = useSelector((state) => state.wishlist.items);
 
   // Local State
   const [products, setProducts] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(searchFromUrl);
   const [loading, setLoading] = useState(true);
   const [sortOption, setSortOption] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -32,15 +38,36 @@ function Shop() {
   const username = user?.username;
 
   // ==========================
+  // Sync Navbar Search
+  // With URL Search
+  // ==========================
+  useEffect(() => {
+    setSearchQuery(searchFromUrl);
+  }, [searchFromUrl]);
+
+  // ==========================
   // Fetch Products
   // ==========================
   useEffect(() => {
-    async function fetchProducts() {
+    const delaySearch = setTimeout(async () => {
       try {
         setLoading(true);
 
+        const queryParams = new URLSearchParams();
+
+        if (searchFromUrl.trim()) {
+          queryParams.append(
+            "search",
+            searchFromUrl.trim()
+          );
+        }
+
+        const queryString = queryParams.toString();
+
         const res = await fetch(
-          `${process.env.REACT_APP_API_URL}/products`,
+          `${process.env.REACT_APP_API_URL}/products${
+            queryString ? `?${queryString}` : ""
+          }`,
           {
             credentials: "include",
           }
@@ -54,15 +81,15 @@ function Shop() {
           setProducts(data.products || []);
         }
       } catch (err) {
-        console.error(err);
+        console.error("Shop products error:", err);
         setProducts([]);
       } finally {
         setLoading(false);
       }
-    }
+    }, 400);
 
-    fetchProducts();
-  }, []);
+    return () => clearTimeout(delaySearch);
+  }, [searchFromUrl]);
 
   // ==========================
   // Logout
@@ -80,48 +107,50 @@ function Shop() {
       console.error(err);
     }
 
-
     navigate("/login");
   };
 
   // ==========================
-  // Search + Category Filter
+  // Category Filter
   // ==========================
   const filteredProducts = products.filter((product) => {
-    const matchesSearch =
-      product.itemName
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      product.description
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase());
-
     const matchesCategory =
       selectedCategory === "All"
         ? true
         : product.category?._id === selectedCategory;
 
-    return matchesSearch && matchesCategory;
+    return matchesCategory;
   });
 
   // ==========================
   // Sorting
   // ==========================
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    if (sortOption === "lowToHigh") return a.price - b.price;
+  const sortedProducts = [...filteredProducts].sort(
+    (a, b) => {
+      if (sortOption === "lowToHigh") {
+        return a.price - b.price;
+      }
 
-    if (sortOption === "highToLow") return b.price - a.price;
+      if (sortOption === "highToLow") {
+        return b.price - a.price;
+      }
 
-    if (sortOption === "new")
-      return new Date(b.createdAt) - new Date(a.createdAt);
+      if (sortOption === "new") {
+        return (
+          new Date(b.createdAt) -
+          new Date(a.createdAt)
+        );
+      }
 
-    if (sortOption === "category")
-      return (a.category?.name || "").localeCompare(
-        b.category?.name || ""
-      );
+      if (sortOption === "category") {
+        return (a.category?.name || "").localeCompare(
+          b.category?.name || ""
+        );
+      }
 
-    return 0;
-  });
+      return 0;
+    }
+  );
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-950 flex flex-col">
