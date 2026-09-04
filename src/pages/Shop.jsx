@@ -1,3 +1,4 @@
+
 // src/pages/Shop.jsx
 
 import React, { useState, useEffect } from "react";
@@ -5,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { addToCart } from "../redux/cartSlice";
-
 
 import CustomerNavbar from "../components/customerComponents/CustomerNavbar";
 import SortNavbar from "../components/customerComponents/SortNavbar";
@@ -27,8 +27,6 @@ function Shop() {
   const [loading, setLoading] = useState(true);
   const [sortOption, setSortOption] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-
-
 
   const user = JSON.parse(localStorage.getItem("user"));
   const username = user?.username;
@@ -66,7 +64,6 @@ function Shop() {
     fetchProducts();
   }, []);
 
-
   // ==========================
   // Logout
   // ==========================
@@ -83,8 +80,6 @@ function Shop() {
       console.error(err);
     }
 
-    localStorage.clear();
-    localStorage.removeItem("theme");
 
     navigate("/login");
   };
@@ -129,7 +124,8 @@ function Shop() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-950 flex flex-col">
+      {/* ================= NAVBAR ================= */}
       <CustomerNavbar
         username={username}
         cartCount={cartItems.reduce(
@@ -141,25 +137,58 @@ function Shop() {
         setSearchQuery={setSearchQuery}
       />
 
+      {/* ================= SORT ================= */}
       <SortNavbar
         sortOption={sortOption}
         setSortOption={setSortOption}
       />
 
+      {/* ================= CATEGORY ================= */}
       <CategoryNavbar
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
       />
 
-      <ProductList
-        products={sortedProducts}
-        loading={loading}
-        wishlistItems={wishlistItems}
-        addToCart={(product) =>
-          dispatch(addToCart(product))
-        }
-      />
+      {/* ================= LOADING / PRODUCTS ================= */}
+      {loading ? (
+        <div className="flex-1 flex items-center justify-center min-h-[70vh]">
+          <div className="flex flex-col items-center justify-center">
 
+            {/* Spinner */}
+            <div className="relative flex items-center justify-center">
+
+              {/* Outer pulse */}
+              <div className="absolute w-20 h-20 rounded-full border-4 border-blue-200 dark:border-blue-900 animate-ping opacity-50"></div>
+
+              {/* Rotating spinner */}
+              <div className="w-14 h-14 border-4 border-gray-300 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin"></div>
+
+              {/* Center dot */}
+              <div className="absolute w-3 h-3 bg-blue-600 dark:bg-blue-400 rounded-full animate-pulse"></div>
+            </div>
+
+            {/* Loading text */}
+            <p className="mt-6 text-lg font-semibold text-gray-700 dark:text-gray-200 animate-pulse">
+              Loading products...
+            </p>
+
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              Please wait a moment
+            </p>
+          </div>
+        </div>
+      ) : (
+        <ProductList
+          products={sortedProducts}
+          loading={loading}
+          wishlistItems={wishlistItems}
+          addToCart={(product) =>
+            dispatch(addToCart(product))
+          }
+        />
+      )}
+
+      {/* ================= FOOTER ================= */}
       <Footer />
     </div>
   );

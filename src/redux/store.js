@@ -1,37 +1,22 @@
+
 // src/redux/store.js
+
 import { configureStore } from "@reduxjs/toolkit";
+
 import cartReducer from "./cartSlice";
 import wishlistReducer from "./wishlistSlice";
-
-const loadState = () => {
-  try {
-    const serializedState = localStorage.getItem("cartState");
-    return serializedState ? JSON.parse(serializedState) : undefined;
-  } catch {
-    return undefined;
-  }
-};
-
-
-const saveState = (state) => {
-  try {
-    const serializedState = JSON.stringify(state.cart);
-    localStorage.setItem("cartState", serializedState);
-  } catch {
-    // ignore write errors
-  }
-};
+import { cartPersistenceMiddleware } from "./cartPersistence";
 
 const store = configureStore({
   reducer: {
     cart: cartReducer,
-      wishlist: wishlistReducer,
+    wishlist: wishlistReducer,
   },
-  preloadedState: { cart: loadState() },
-});
 
-store.subscribe(() => {
-  saveState(store.getState());
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(
+      cartPersistenceMiddleware
+    ),
 });
 
 export default store;

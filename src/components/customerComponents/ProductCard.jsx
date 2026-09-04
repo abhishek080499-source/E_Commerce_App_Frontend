@@ -3,13 +3,14 @@ import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setWishlist } from "../../redux/wishlistSlice";
 
+
 function ProductCard({
   product,
   addToCart,
   wishlistItems = [],
 }) {
   const [showModal, setShowModal] = useState(false);
-
+const [wishlistLoading, setWishlistLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -25,6 +26,8 @@ function ProductCard({
   );
 
   const handleWishlist = async () => {
+ if (wishlistLoading) return;
+  setWishlistLoading(true);
     try {
       if (isWishlisted) {
         const res = await fetch(
@@ -83,6 +86,9 @@ function ProductCard({
     } catch (err) {
       console.log(err);
     }
+    finally {
+    setWishlistLoading(false);
+  }
   };
 
   return (
@@ -90,14 +96,19 @@ function ProductCard({
 
       {/* Wishlist Button */}
 <button
+  disabled={wishlistLoading}
   onClick={(e) => {
     e.preventDefault();
     e.stopPropagation();
     handleWishlist();
   }}
-  className="absolute top-3 right-3 z-20 text-2xl bg-black dark:bg-gray-800 rounded-full p-2 hover:scale-110 transition"
+className={`absolute top-3 right-3 z-20 text-2xl bg-black dark:bg-gray-800 rounded-full p-2 transition ${
+  wishlistLoading
+    ? "opacity-50 cursor-not-allowed"
+    : "hover:scale-110"
+}`}
 >
-  {isWishlisted ? "❤️" : "🤍"}
+{wishlistLoading ? "⏳" : isWishlisted ? "❤️" : "🤍"}
 </button>
 
       {/* Image */}

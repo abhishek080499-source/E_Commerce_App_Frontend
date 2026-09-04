@@ -1,5 +1,5 @@
-
 // src/pages/Payment.jsx
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CustomerNavbar from "../components/customerComponents/CustomerNavbar";
@@ -21,6 +21,9 @@ const Payment = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [paidAmount, setPaidAmount] = useState(0);
+
+  // Payment Loading State
+  const [loading, setLoading] = useState(false);
 
   // Get logged-in user info
   const user = JSON.parse(localStorage.getItem("user"));
@@ -61,6 +64,8 @@ const Payment = () => {
 
   const handlePayment = async () => {
     try {
+      setLoading(true);
+
       // Save customer info
       localStorage.setItem(
         "customerInfo",
@@ -114,24 +119,25 @@ const Payment = () => {
     } catch (err) {
       console.error("Payment error:", err);
       alert(err.message || "Payment failed!");
+      setLoading(false);
     }
   };
 
   // Download invoice
-const downloadInvoice = () => {
-  if (!pdfUrl) {
-    alert("Invoice PDF is not available.");
-    return;
-  }
+  const downloadInvoice = () => {
+    if (!pdfUrl) {
+      alert("Invoice PDF is not available.");
+      return;
+    }
 
-  console.log("Invoice URL:", pdfUrl);
+    console.log("Invoice URL:", pdfUrl);
 
-  window.open(
-    pdfUrl,
-    "_blank",
-    "noopener,noreferrer"
-  );
-};
+    window.open(
+      pdfUrl,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
 
   const handleLogout = async () => {
     try {
@@ -145,10 +151,7 @@ const downloadInvoice = () => {
     } catch (err) {
       console.error("Logout error:", err);
     }
-
-    localStorage.removeItem("user");
-    localStorage.removeItem("customerInfo");
-    localStorage.removeItem("theme");
+;
 
     navigate("/login");
   };
@@ -274,12 +277,39 @@ const downloadInvoice = () => {
               Grand Total: ₹{grandTotal}
             </h5>
 
-            <button
-              onClick={handlePayment}
-              className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded mt-6 transition font-semibold w-full md:w-auto"
-            >
-              ✅ Confirm Payment
-            </button>
+            {/* ================= PAYMENT LOADING ================= */}
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-10">
+                {/* Spinner */}
+                <div className="relative flex items-center justify-center">
+
+                  {/* Outer pulse */}
+                  <div className="absolute w-20 h-20 rounded-full border-4 border-blue-200 dark:border-blue-900 animate-ping opacity-50"></div>
+
+                  {/* Rotating spinner */}
+                  <div className="w-14 h-14 border-4 border-gray-300 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin"></div>
+
+                  {/* Center dot */}
+                  <div className="absolute w-3 h-3 bg-blue-600 dark:bg-blue-400 rounded-full animate-pulse"></div>
+                </div>
+
+                {/* Loading text */}
+                <p className="mt-6 text-lg font-semibold text-gray-700 dark:text-gray-200 animate-pulse">
+                  Processing payment...
+                </p>
+
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Please wait while we generate your invoice
+                </p>
+              </div>
+            ) : (
+              <button
+                onClick={handlePayment}
+                className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded mt-6 transition font-semibold w-full md:w-auto"
+              >
+                ✅ Confirm Payment
+              </button>
+            )}
           </>
         ) : (
           <div className="mt-6 border p-6 rounded bg-green-50 dark:bg-green-900">
@@ -341,4 +371,3 @@ const downloadInvoice = () => {
 };
 
 export default Payment;
-

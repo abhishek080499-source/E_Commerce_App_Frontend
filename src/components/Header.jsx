@@ -25,7 +25,6 @@ function Header({ toggleSidebar }) {
     } catch (err) {
       console.error("Logout error:", err);
     }
-    localStorage.removeItem("user");
     navigate("/login");
   };
 

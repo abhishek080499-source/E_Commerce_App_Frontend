@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 function CreateAccount() {
@@ -15,6 +16,17 @@ function CreateAccount() {
 
   const type = "customer";
 
+  // Apply saved theme when Create Account page loads
+  useEffect(() => {
+    const theme = localStorage.getItem("theme");
+
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, []);
+
   async function handleSignup(e) {
     e.preventDefault();
 
@@ -26,18 +38,21 @@ function CreateAccount() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/signup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-          type,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/auth/signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            email,
+            password,
+            type,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -56,384 +71,202 @@ function CreateAccount() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-800 to-blue-900 p-5">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4 py-8 transition-colors duration-300">
+      <div className="w-full max-w-md">
 
-      {/* Animated Background */}
-      <div className="absolute inset-0">
+        {/* Brand */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold tracking-tight text-yellow-400">
+            Shopify
+          </h1>
 
-        <div className="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-pink-500/30 blur-3xl animate-pulse"></div>
-
-        <div
-          className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-cyan-500/30 blur-3xl animate-bounce"
-          style={{ animationDuration: "8s" }}
-        ></div>
-
-        <div
-          className="absolute top-1/2 left-1/2 h-72 w-72 rounded-full bg-purple-500/20 blur-3xl"
-          style={{
-            transform: "translate(-50%,-50%)",
-            animation: "pulse 6s infinite",
-          }}
-        ></div>
-
-      </div>
-
-      {/* Signup Card */}
-      <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
-
-        <div className="mb-6 flex justify-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 text-4xl shadow-xl">
-            👤
-          </div>
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            Create your account
+          </p>
         </div>
 
-        <h1 className="text-center text-4xl font-bold text-white">
-          Create Account
-        </h1>
+        {/* Card */}
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg p-6 sm:p-8">
 
-        <p className="mt-2 text-center text-gray-300">
-          Join us today and start shopping.
-        </p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Create Account
+          </h2>
 
-        <form onSubmit={handleSignup} className="mt-8 space-y-5">
+          <p className="mt-1 mb-7 text-sm text-gray-500 dark:text-gray-400">
+            Enter your details to get started.
+          </p>
 
-          {/* Username */}
-          <div>
-            <label className="mb-2 block text-sm text-gray-200">
-              Username
-            </label>
+          <form onSubmit={handleSignup} className="space-y-5">
 
-            <input
-              type="text"
-              placeholder="JohnDoe"
-              required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-gray-300 outline-none transition duration-300 focus:scale-[1.02] focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400"
-            />
-          </div>
-
-          {/* Email */}
-          <div>
-            <label className="mb-2 block text-sm text-gray-200">
-              Email
-            </label>
-
-            <input
-              type="email"
-              placeholder="john@example.com"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-gray-300 outline-none transition duration-300 focus:scale-[1.02] focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400"
-            />
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="mb-2 block text-sm text-gray-200">
-              Password
-            </label>
-
-            <div className="relative">
+            {/* Username */}
+            <div>
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                Username
+              </label>
 
               <input
-                type={showPassword ? "text" : "password"}
-                placeholder="********"
+                id="username"
+                type="text"
+                placeholder="JohnDoe"
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 pr-14 text-white placeholder-gray-300 outline-none transition duration-300 focus:scale-[1.02] focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
               />
-
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white"
-              >
-                {showPassword ? "🙈" : "👁"}
-              </button>
-
             </div>
-          </div>
 
-          {/* Confirm Password */}
-          <div>
-            <label className="mb-2 block text-sm text-gray-200">
-              Confirm Password
-            </label>
-
-            <div className="relative">
+            {/* Email */}
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                Email
+              </label>
 
               <input
-                type={showConfirm ? "text" : "password"}
-                placeholder="********"
+                id="email"
+                type="email"
+                placeholder="john@example.com"
                 required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className={`w-full rounded-xl border bg-white/10 px-4 py-3 pr-14 text-white placeholder-gray-300 outline-none transition duration-300 focus:scale-[1.02]
-                ${
-                  confirmPassword.length > 0
-                    ? password === confirmPassword
-                      ? "border-green-400 focus:ring-green-400"
-                      : "border-red-400 focus:ring-red-400"
-                    : "border-white/20 focus:ring-cyan-400"
-                }`}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
               />
-
-              <button
-                type="button"
-                onClick={() => setShowConfirm(!showConfirm)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white"
-              >
-                {showConfirm ? "🙈" : "👁"}
-              </button>
-
             </div>
 
-            {confirmPassword && (
-              <p
-                className={`mt-2 text-sm ${
-                  password === confirmPassword
-                    ? "text-green-400"
-                    : "text-red-400"
-                }`}
+            {/* Password */}
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
               >
-                {password === confirmPassword
-                  ? "✓ Passwords match"
-                  : "✗ Passwords do not match"}
-              </p>
-            )}
-          </div>
+                Password
+              </label>
 
-          {/* Privacy */}
-          <label className="flex cursor-pointer items-center gap-3 text-gray-200">
-            <input
-              type="checkbox"
-              required
-              className="h-5 w-5 accent-cyan-500"
-            />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 pr-16 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                />
 
-            <span className="text-sm">
-              I agree to the Privacy Policy & Terms
-            </span>
-          </label>
-
-          {/* Button */}
-          <button
-            disabled={loading}
-            className="flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 py-3 font-bold text-white shadow-xl transition duration-300 hover:scale-105 hover:shadow-cyan-500/50 disabled:opacity-70"
-          >
-            {loading ? (
-              <>
-                <svg
-                  className="mr-2 h-5 w-5 animate-spin"
-                  viewBox="0 0 24 24"
-                  fill="none"
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition"
                 >
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="white"
-                    strokeWidth="4"
-                    opacity=".3"
-                  />
-                  <path
-                    d="M22 12a10 10 0 0 1-10 10"
-                    stroke="white"
-                    strokeWidth="4"
-                  />
-                </svg>
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+            </div>
 
-                Creating...
-              </>
-            ) : (
-              "Create Account"
-            )}
-          </button>
+            {/* Confirm Password */}
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                Confirm Password
+              </label>
 
-        </form>
+              <div className="relative">
+                <input
+                  id="confirmPassword"
+                  type={showConfirm ? "text" : "password"}
+                  placeholder="Confirm your password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className={`w-full px-4 py-3 pr-16 rounded-xl border bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none transition focus:ring-2 ${
+                    confirmPassword.length > 0
+                      ? password === confirmPassword
+                        ? "border-green-500 focus:border-green-500 focus:ring-green-500/20"
+                        : "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                      : "border-gray-300 dark:border-gray-700 focus:border-blue-500 focus:ring-blue-500/20"
+                  }`}
+                />
 
-        <div className="my-7 flex items-center">
-          <div className="h-px flex-1 bg-white/20"></div>
-          <span className="px-4 text-gray-300">OR</span>
-          <div className="h-px flex-1 bg-white/20"></div>
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition"
+                >
+                  {showConfirm ? "Hide" : "Show"}
+                </button>
+              </div>
+
+              {confirmPassword && (
+                <p
+                  className={`mt-2 text-sm ${
+                    password === confirmPassword
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-red-600 dark:text-red-400"
+                  }`}
+                >
+                  {password === confirmPassword
+                    ? "✓ Passwords match"
+                    : "✗ Passwords do not match"}
+                </p>
+              )}
+            </div>
+
+            {/* Privacy Policy */}
+            <label className="flex cursor-pointer items-start gap-3 text-gray-600 dark:text-gray-400">
+              <input
+                type="checkbox"
+                required
+                className="mt-0.5 h-4 w-4 shrink-0 accent-blue-600"
+              />
+
+              <span className="text-sm leading-5">
+                I agree to the{" "}
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  Privacy Policy & Terms
+                </span>
+              </span>
+            </label>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-semibold transition duration-200 flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                "Create Account"
+              )}
+            </button>
+          </form>
+
+          {/* Login */}
+          <div className="mt-7 pt-6 border-t border-gray-200 dark:border-gray-800 text-center">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition"
+              >
+                Login
+              </Link>
+            </p>
+          </div>
         </div>
-
-        <Link
-          to="/login"
-          className="block text-center text-cyan-300 transition hover:text-white"
-        >
-          Already have an account? Login
-        </Link>
-
       </div>
-
- 
     </div>
   );
 }
 
 export default CreateAccount;
-
-
-
-
-
-
-// import React, { useState } from "react";
-// import { Link, useNavigate } from "react-router-dom";
-
-// function CreateAccount() {
-//   const navigate = useNavigate();
-//   const [username, setUsername] = useState("");
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [confirmPassword, setConfirmPassword] = useState("");
-//   // const [type, setType] = useState("customer"); // default
-//   const type = "customer";
-
-//   async function handleSignup(e) {
-//     e.preventDefault();
-
-//     if (password !== confirmPassword) {
-//       alert("Passwords do not match!");
-//       return;
-//     }
-
-//     try {
-//       const response = await fetch("http://localhost:5000/auth/signup", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ username, email, password, type }), // ✅ type included
-//       });
-
-//       const data = await response.json();
-
-//       if (response.ok) {
-//         alert("Account created successfully!");
-//         navigate("/login");
-//       } else {
-//         alert(data.error || "Signup failed");
-//       }
-//     } catch (err) {
-//       console.error("Signup error:", err);
-//       alert("Backend not reachable. Check server.");
-//     }
-//   }
-
-//   return (
-//     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
-//       <div className="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
-//         <h1 className="mb-6 text-3xl font-extrabold text-center text-gray-800 dark:text-gray-100">
-//           Create Account
-//         </h1>
-
-//         <form onSubmit={handleSignup} className="space-y-5">
-//           {/* Username */}
-//           <div>
-//             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-//               Username
-//             </label>
-//             <input
-//               type="text"
-//               placeholder="JohnDoe"
-//               value={username}
-//               onChange={(e) => setUsername(e.target.value)}
-//               required
-//               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 
-//                          shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm 
-//                          dark:bg-gray-700 dark:text-gray-200"
-//             />
-//           </div>
-
-//           {/* Email */}
-//           <div>
-//             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-//               Email
-//             </label>
-//             <input
-//               type="email"
-//               placeholder="john@doe.com"
-//               value={email}
-//               onChange={(e) => setEmail(e.target.value)}
-//               required
-//               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 
-//                          shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm 
-//                          dark:bg-gray-700 dark:text-gray-200"
-//             />
-//           </div>
-
-//           {/* Password */}
-//           <div>
-//             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-//               Password
-//             </label>
-//             <input
-//               type="password"
-//               placeholder="***************"
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//               required
-//               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 
-//                          shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm 
-//                          dark:bg-gray-700 dark:text-gray-200"
-//             />
-//           </div>
-
-//           {/* Confirm Password */}
-//           <div>
-//             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-//               Confirm Password
-//             </label>
-//             <input
-//               type="password"
-//               placeholder="***************"
-//               value={confirmPassword}
-//               onChange={(e) => setConfirmPassword(e.target.value)}
-//               required
-//               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 
-//                          shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm 
-//                          dark:bg-gray-700 dark:text-gray-200"
-//             />
-//           </div>
-
-//           {/* Privacy Policy */}
-//           <div className="flex items-center mt-4">
-//             <input type="checkbox" required className="h-4 w-4 text-indigo-600 border-gray-300 rounded" />
-//             <span className="ml-2 text-sm text-gray-700 dark:text-gray-200">
-//               I agree to the <span className="underline">privacy policy</span>
-//             </span>
-//           </div>
-
-//           {/* Submit */}
-//           <button
-//             type="submit"
-//             className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md 
-//                        hover:bg-indigo-700 focus:outline-none focus:ring-2 
-//                        focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-300"
-//           >
-//             Create Account
-//           </button>
-//         </form>
-
-//         {/* Links */}
-//         <p className="mt-6 text-center">
-//           <Link
-//             className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline hover:text-indigo-800 transition-colors"
-//             to="/login"
-//           >
-//             Already have an account? Login
-//           </Link>
-//         </p>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default CreateAccount;
-
-
-
-
