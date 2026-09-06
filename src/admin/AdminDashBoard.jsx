@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -104,9 +105,12 @@ function AdminDashboard() {
       <div className="flex flex-col min-h-screen">
         <Header toggleSidebar={toggleSidebar} />
 
-        <main className="flex-1 p-6">
+        <main className="flex-1 pb-14">
           <Outlet />
         </main>
+
+        <Footer />
+        
       </div>
     </div>
   );

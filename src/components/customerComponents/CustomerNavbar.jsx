@@ -21,8 +21,8 @@ function CustomerNavbar({
   const buttonRef = useRef(null);
 
   const mobileUsername =
-    username && username.length > 10
-      ? `${username.slice(0, 10)}...`
+    username && username.length > 15
+      ? `${username.slice(0, 15)}...`
       : username;
 
   const desktopUsername =
@@ -159,70 +159,141 @@ function CustomerNavbar({
         transition-all duration-300
       "
     >
+      {/* =========================
+          NAVBAR TOP
+      ========================== */}
       <div
         className="
           w-full
-          px-4 sm:px-6 lg:px-8
-          py-3
-          flex justify-between items-center
-          min-h-[68px]
+          px-2 sm:px-6 lg:px-8
+          py-2 sm:py-3
+          flex items-center justify-between
+          min-h-[60px] sm:min-h-[68px]
+          gap-1 sm:gap-3
         "
       >
-        {/* Logo */}
-        <h1
+        {/* =========================
+            LEFT SIDE
+        ========================== */}
+        <div
           className="
-            text-xl sm:text-2xl
-            font-bold
-            tracking-tight
-            whitespace-nowrap
+            flex items-center
             min-w-0
+            flex-1
+            overflow-hidden
           "
         >
-          <span
+          {/* =========================
+              LOGO + BRAND
+          ========================== */}
+          <div
+            onClick={() => navigate("/customer")}
             className="
-              text-yellow-500
-              dark:text-yellow-400
-              transition-colors duration-300
+              flex items-center
+              gap-1.5 sm:gap-2
+              cursor-pointer
+              flex-shrink-0
+              group
             "
           >
-            Shopify
-          </span>
+            {/* Logo */}
+            <div
+              className="
+                w-8 h-8
+                sm:w-10 sm:h-10
+                flex-shrink-0
+                rounded-lg
+                flex items-center justify-center
+                group-hover:scale-105
+                transition-transform duration-300
+              "
+            >
+              <img
+                src="/favicon.png"
+                alt="SwiftCart Logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
 
-          {/* Mobile */}
+            {/* Brand Name */}
+            <div className="whitespace-nowrap">
+              <h2
+                className="
+                  text-base sm:text-xl
+                  font-extrabold
+                  tracking-tight
+                  text-gray-800
+                  dark:text-white
+                  group-hover:text-blue-600
+                  dark:group-hover:text-blue-400
+                  transition-colors duration-300
+                "
+              >
+                SwiftCart
+              </h2>
+
+              <p
+                className="
+                  text-[7px] sm:text-[9px]
+                  font-semibold
+                  tracking-wider
+                  text-gray-500
+                  dark:text-gray-400
+                  uppercase
+                  leading-none
+                "
+              >
+                Shop Smart • Shop Fast
+              </p>
+            </div>
+          </div>
+
+          {/* =========================
+              MOBILE WELCOME
+          ========================== */}
           <span
             className="
               inline sm:hidden
               text-gray-700
               dark:text-gray-200
               font-medium
-              text-sm
-              ml-1
+              text-xs
+              ml-2
+              truncate
+              min-w-0
             "
           >
-            | {mobileUsername}
+            Welcome, {mobileUsername}
           </span>
 
-          {/* Desktop */}
+          {/* =========================
+              DESKTOP WELCOME
+          ========================== */}
           <span
             className="
               hidden sm:inline
               text-gray-700
               dark:text-gray-200
               font-medium
+              ml-4
+              whitespace-nowrap
             "
           >
-            {" "}
-            | Welcome, {desktopUsername}
+            Welcome, {desktopUsername}
           </span>
-        </h1>
+        </div>
 
-        {/* Hamburger */}
+        {/* =========================
+            HAMBURGER
+        ========================== */}
         <button
           ref={buttonRef}
           onClick={() => setIsOpen(!isOpen)}
+          aria-label="Toggle navigation menu"
           className="
             lg:hidden
-            p-2.5
+            flex-shrink-0
+            p-2
             rounded-lg
             text-gray-700
             dark:text-gray-200
@@ -236,7 +307,7 @@ function CustomerNavbar({
           "
         >
           <svg
-            className="w-6 h-6"
+            className="w-5 h-5 sm:w-6 sm:h-6"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -259,7 +330,9 @@ function CustomerNavbar({
           </svg>
         </button>
 
-        {/* Desktop Menu */}
+        {/* =========================
+            DESKTOP MENU
+        ========================== */}
         <div className="hidden lg:flex items-center gap-5 xl:gap-6">
           {/* Home */}
           <NavLink
@@ -401,6 +474,7 @@ function CustomerNavbar({
           {/* Theme */}
           <button
             onClick={() => setIsDarkMode(!isDarkMode)}
+            aria-label="Toggle dark mode"
             className="
               w-10 h-10
               flex items-center justify-center
@@ -441,7 +515,9 @@ function CustomerNavbar({
         </div>
       </div>
 
-      {/* Mobile Overlay */}
+      {/* =========================
+          MOBILE OVERLAY
+      ========================== */}
       {isOpen && (
         <div
           className="
@@ -455,7 +531,9 @@ function CustomerNavbar({
         />
       )}
 
-      {/* Mobile Menu */}
+      {/* =========================
+          MOBILE MENU
+      ========================== */}
       <div
         ref={menuRef}
         className={`
@@ -476,8 +554,8 @@ function CustomerNavbar({
           }
         `}
       >
-        <div className="p-5 space-y-2">
-          {/* Mobile Links */}
+        <div className="p-4 sm:p-5 space-y-2">
+          {/* Home */}
           <NavLink
             to="/customer"
             onClick={() => setIsOpen(false)}
@@ -493,6 +571,7 @@ function CustomerNavbar({
             Home
           </NavLink>
 
+          {/* Shop */}
           <NavLink
             to="/shop"
             onClick={() => setIsOpen(false)}
@@ -508,6 +587,7 @@ function CustomerNavbar({
             Shop
           </NavLink>
 
+          {/* My Orders */}
           <NavLink
             to="/my-orders"
             onClick={() => setIsOpen(false)}
@@ -523,6 +603,7 @@ function CustomerNavbar({
             My Orders
           </NavLink>
 
+          {/* Wishlist */}
           <NavLink
             to="/wishlist"
             onClick={() => setIsOpen(false)}
@@ -538,6 +619,7 @@ function CustomerNavbar({
             Wishlist
           </NavLink>
 
+          {/* About Us */}
           <NavLink
             to="/about-us"
             onClick={() => setIsOpen(false)}
@@ -560,6 +642,7 @@ function CustomerNavbar({
           <div
             className="
               flex
+              w-full
               overflow-hidden
               rounded-lg
               border border-gray-300
@@ -579,7 +662,8 @@ function CustomerNavbar({
               className="
                 flex-1
                 min-w-0
-                px-4 py-2.5
+                px-3 sm:px-4
+                py-2.5
                 bg-transparent
                 text-gray-800
                 dark:text-white
@@ -592,13 +676,14 @@ function CustomerNavbar({
             <button
               onClick={handleSearch}
               className="
+                flex-shrink-0
                 bg-gray-900
                 hover:bg-yellow-500
                 dark:bg-yellow-500
                 dark:hover:bg-yellow-400
                 text-white
                 dark:text-gray-900
-                px-4
+                px-3 sm:px-4
                 font-medium
                 transition-all duration-300
               "
@@ -608,7 +693,16 @@ function CustomerNavbar({
           </div>
 
           {/* Cart + Theme + Logout */}
-          <div className="flex items-center justify-center gap-3 pt-4">
+          <div
+            className="
+              flex
+              flex-wrap
+              items-center
+              justify-center
+              gap-2 sm:gap-3
+              pt-4
+            "
+          >
             {/* Cart */}
             <NavLink
               to="/cart"
@@ -618,7 +712,8 @@ function CustomerNavbar({
                 bg-green-600
                 hover:bg-green-700
                 text-white
-                px-4 py-2.5
+                px-3 sm:px-4
+                py-2.5
                 rounded-lg
                 text-sm
                 font-medium
@@ -633,6 +728,7 @@ function CustomerNavbar({
                 className="
                   min-w-[20px]
                   h-[20px]
+                  px-1
                   flex items-center justify-center
                   bg-white
                   text-green-700
@@ -648,6 +744,7 @@ function CustomerNavbar({
             {/* Dark Mode */}
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
+              aria-label="Toggle dark mode"
               className="
                 w-11 h-11
                 flex items-center justify-center
@@ -675,7 +772,8 @@ function CustomerNavbar({
                 bg-red-600
                 hover:bg-red-700
                 text-white
-                px-4 py-2.5
+                px-3 sm:px-4
+                py-2.5
                 rounded-lg
                 text-sm
                 font-medium

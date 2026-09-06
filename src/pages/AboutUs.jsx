@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -37,7 +36,7 @@ function AboutUs() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white transition-colors duration-500 overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white transition-colors duration-500">
 
       {/* ================= NAVBAR ================= */}
       <CustomerNavbar
@@ -61,43 +60,177 @@ function AboutUs() {
 
         <div className="absolute bottom-[-100px] left-1/3 w-80 h-80 bg-indigo-400/10 rounded-full blur-3xl"></div>
 
-        <div className="relative max-w-6xl mx-auto px-6 py-20 md:py-28 text-center">
+        {/* Decorative shapes */}
+        <div className="absolute top-20 left-10 w-16 h-16 border border-white/10 rounded-2xl rotate-12 animate-pulse hidden lg:block"></div>
 
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-sm font-medium hover:bg-white/20 transition duration-300">
-            <span>🛍️</span>
-            <span>Welcome to Our Store</span>
+        <div className="absolute bottom-16 right-10 w-20 h-20 border border-white/10 rounded-full animate-pulse hidden lg:block"></div>
+
+        <div className="relative max-w-6xl mx-auto px-6 py-12 sm:py-14 lg:py-16">
+
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+
+            {/* ================= LEFT CONTENT ================= */}
+            <div className="text-center lg:text-left">
+
+              {/* Logo + Brand */}
+              <div className="flex flex-col sm:flex-row items-center lg:justify-start gap-4 mb-6">
+
+                {/* Logo */}
+                <div className="group relative">
+
+                  <div className="absolute inset-0 bg-white/20 rounded-3xl blur-xl group-hover:bg-white/30 group-hover:blur-2xl transition-all duration-500"></div>
+
+                  <div className="relative w-20 h-20 sm:w-22 sm:h-22 rounded-3xl bg-white/10 border border-white/20 backdrop-blur-md shadow-2xl flex items-center justify-center group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500">
+
+                    <img
+                      src="/favicon.png"
+                      alt="SwiftCart Logo"
+                      className="w-14 h-14 sm:w-16 sm:h-16 object-contain drop-shadow-xl group-hover:scale-110 transition-transform duration-500"
+                    />
+
+                  </div>
+                </div>
+
+                {/* Brand Name */}
+                <div>
+
+                  <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight hover:scale-105 origin-center lg:origin-left transition-transform duration-500">
+                    SwiftCart
+                  </h1>
+
+                  <p className="mt-1 text-sm sm:text-base font-medium tracking-[0.2em] uppercase text-blue-100">
+                    Shop Smart • Shop Fast
+                  </p>
+
+                </div>
+
+              </div>
+
+              {/* Welcome Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 mb-5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-sm font-medium hover:bg-white/20 hover:scale-105 transition-all duration-300">
+
+                <span className="animate-bounce">
+                  🛍️
+                </span>
+
+                <span>
+                  Welcome to Our Store
+                </span>
+
+              </div>
+
+              {/* About Us */}
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight hover:text-blue-100 transition-colors duration-300">
+                About Us
+              </h2>
+
+              {/* Description */}
+              <p className="max-w-2xl mx-auto lg:mx-0 mt-5 text-base sm:text-lg text-blue-100 leading-relaxed">
+                SwiftCart is built to make online shopping simple, fast,
+                and enjoyable. Discover quality products, enjoy a smooth
+                shopping experience, and shop with confidence — all in
+                one place.
+              </p>
+
+              {/* Brand Highlights */}
+              <div className="flex flex-wrap justify-center lg:justify-start gap-3 mt-6">
+
+                <span className="px-4 py-2 rounded-full bg-white/10 border border-white/10 text-sm text-blue-50 backdrop-blur-sm hover:bg-white/20 hover:-translate-y-1 transition-all duration-300">
+                  ⚡ Fast Shopping
+                </span>
+
+                <span className="px-4 py-2 rounded-full bg-white/10 border border-white/10 text-sm text-blue-50 backdrop-blur-sm hover:bg-white/20 hover:-translate-y-1 transition-all duration-300">
+                  🛡️ Trusted Quality
+                </span>
+
+                <span className="px-4 py-2 rounded-full bg-white/10 border border-white/10 text-sm text-blue-50 backdrop-blur-sm hover:bg-white/20 hover:-translate-y-1 transition-all duration-300">
+                  ❤️ Customer First
+                </span>
+
+              </div>
+
+              {/* Buttons */}
+              <div className="mt-7 flex flex-wrap justify-center lg:justify-start gap-4">
+
+                <button
+                  onClick={() => navigate("/customer")}
+                  className="px-7 py-3 rounded-lg bg-white text-blue-700 font-semibold shadow-lg hover:shadow-2xl hover:-translate-y-1 hover:scale-105 transition-all duration-300"
+                >
+                  Start Shopping
+                </button>
+
+                <button
+                  onClick={() => navigate(-1)}
+                  className="px-7 py-3 rounded-lg bg-white/10 border border-white/30 text-white font-semibold backdrop-blur-sm hover:bg-white/20 hover:-translate-y-1 hover:scale-105 transition-all duration-300"
+                >
+                  ← Go Back
+                </button>
+
+              </div>
+
+            </div>
+
+            {/* ================= RIGHT VISUAL ================= */}
+            <div className="hidden lg:flex justify-center items-center">
+
+              <div className="relative group">
+
+                {/* Glow */}
+                <div className="absolute inset-0 bg-white/10 rounded-[3rem] blur-3xl group-hover:bg-white/20 transition-all duration-700"></div>
+
+                {/* Main Card */}
+                <div className="relative w-80 h-80 xl:w-88 xl:h-88 rounded-[3rem] bg-white/10 border border-white/20 backdrop-blur-md shadow-2xl flex flex-col items-center justify-center group-hover:scale-105 group-hover:-rotate-2 transition-all duration-700">
+
+                  {/* Logo */}
+                  <div className="w-28 h-28 rounded-3xl bg-white/10 border border-white/20 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500">
+
+                    <img
+                      src="/favicon.png"
+                      alt="SwiftCart Logo"
+                      className="w-20 h-20 object-contain"
+                    />
+
+                  </div>
+
+                  {/* Brand */}
+                  <h3 className="mt-6 text-3xl font-extrabold">
+                    SwiftCart
+                  </h3>
+
+                  <p className="mt-2 text-blue-100 text-sm tracking-wider">
+                    SHOP SMART • SHOP FAST
+                  </p>
+
+                  {/* Features */}
+                  <div className="flex gap-3 mt-7">
+
+                    <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-xs hover:bg-white/20 hover:-translate-y-1 transition-all duration-300">
+                      Quality
+                    </span>
+
+                    <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-xs hover:bg-white/20 hover:-translate-y-1 transition-all duration-300">
+                      Trust
+                    </span>
+
+                    <span className="px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-xs hover:bg-white/20 hover:-translate-y-1 transition-all duration-300">
+                      Speed
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight hover:scale-105 transition-transform duration-500">
-            About Us
-          </h1>
-
-          <p className="max-w-3xl mx-auto mt-6 text-base sm:text-lg md:text-xl text-blue-100 leading-relaxed">
-            We believe in delivering quality products, creating amazing
-            shopping experiences, and building long-lasting trust with
-            every customer.
-          </p>
-
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <button
-              onClick={() => navigate("/customer")}
-              className="px-6 py-3 rounded-lg bg-white text-blue-700 font-semibold shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
-            >
-              Start Shopping
-            </button>
-
-            <button
-              onClick={() => navigate(-1)}
-              className="px-6 py-3 rounded-lg bg-white/10 border border-white/30 text-white font-semibold backdrop-blur-sm hover:bg-white/20 hover:-translate-y-1 transition-all duration-300"
-            >
-              ← Go Back
-            </button>
-          </div>
         </div>
       </section>
 
       {/* ================= MISSION SECTION ================= */}
-      <section className="max-w-6xl mx-auto w-full px-6 py-16 md:py-20">
+      <section className="max-w-6xl mx-auto w-full px-6 py-14 md:py-18">
 
         <div className="grid md:grid-cols-2 gap-10 items-center">
 
@@ -125,24 +258,28 @@ function AboutUs() {
 
             <div className="mt-7 flex flex-wrap gap-4">
 
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+              <div className="flex items-center gap-3 group">
+
+                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
                   ✓
                 </div>
 
-                <span className="font-medium text-gray-700 dark:text-gray-200">
+                <span className="font-medium text-gray-700 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                   Quality Products
                 </span>
+
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
+              <div className="flex items-center gap-3 group">
+
+                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
                   ✓
                 </div>
 
-                <span className="font-medium text-gray-700 dark:text-gray-200">
+                <span className="font-medium text-gray-700 dark:text-gray-200 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-300">
                   Trusted Service
                 </span>
+
               </div>
 
             </div>
@@ -158,7 +295,20 @@ function AboutUs() {
               <div className="relative w-64 h-64 sm:w-72 sm:h-72 rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-700 dark:from-blue-700 dark:to-indigo-950 shadow-2xl flex items-center justify-center transform group-hover:-rotate-3 group-hover:scale-105 transition-all duration-500">
 
                 <div className="text-center">
-                  <div className="text-7xl mb-4">🛍️</div>
+
+                  <div className="flex justify-center mb-4">
+
+                    <div className="w-20 h-20 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform duration-500">
+
+                      <img
+                        src="/favicon.png"
+                        alt="SwiftCart"
+                        className="w-14 h-14 object-contain"
+                      />
+
+                    </div>
+
+                  </div>
 
                   <p className="text-xl font-bold">
                     Shop With Confidence
@@ -167,9 +317,11 @@ function AboutUs() {
                   <p className="text-sm text-blue-100 mt-2">
                     Quality • Trust • Service
                   </p>
+
                 </div>
 
               </div>
+
             </div>
           </div>
 
@@ -177,11 +329,11 @@ function AboutUs() {
       </section>
 
       {/* ================= VALUES SECTION ================= */}
-      <section className="relative py-16 md:py-20 bg-gray-100 dark:bg-gray-900 transition-colors duration-500">
+      <section className="relative py-14 md:py-18 bg-gray-100 dark:bg-gray-900 transition-colors duration-500">
 
         <div className="max-w-6xl mx-auto px-6">
 
-          <div className="text-center mb-12">
+          <div className="text-center mb-10">
 
             <span className="text-sm font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
               What Matters To Us
@@ -201,9 +353,9 @@ function AboutUs() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
             {/* Value 1 */}
-            <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-gray-100 dark:border-gray-700">
+            <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md hover:shadow-2xl hover:-translate-y-3 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-500 border border-gray-100 dark:border-gray-700">
 
-              <div className="w-14 h-14 rounded-xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-2xl mb-5 group-hover:scale-110 transition duration-300">
+              <div className="w-14 h-14 rounded-xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-2xl mb-5 group-hover:scale-110 group-hover:rotate-6 transition duration-300">
                 ❤️
               </div>
 
@@ -218,9 +370,9 @@ function AboutUs() {
             </div>
 
             {/* Value 2 */}
-            <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-gray-100 dark:border-gray-700">
+            <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md hover:shadow-2xl hover:-translate-y-3 hover:border-green-300 dark:hover:border-green-700 transition-all duration-500 border border-gray-100 dark:border-gray-700">
 
-              <div className="w-14 h-14 rounded-xl bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-2xl mb-5 group-hover:scale-110 transition duration-300">
+              <div className="w-14 h-14 rounded-xl bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-2xl mb-5 group-hover:scale-110 group-hover:rotate-6 transition duration-300">
                 🤝
               </div>
 
@@ -235,9 +387,9 @@ function AboutUs() {
             </div>
 
             {/* Value 3 */}
-            <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-gray-100 dark:border-gray-700">
+            <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md hover:shadow-2xl hover:-translate-y-3 hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-500 border border-gray-100 dark:border-gray-700">
 
-              <div className="w-14 h-14 rounded-xl bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-2xl mb-5 group-hover:scale-110 transition duration-300">
+              <div className="w-14 h-14 rounded-xl bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-2xl mb-5 group-hover:scale-110 group-hover:rotate-6 transition duration-300">
                 💡
               </div>
 
@@ -252,9 +404,9 @@ function AboutUs() {
             </div>
 
             {/* Value 4 */}
-            <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-gray-100 dark:border-gray-700">
+            <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md hover:shadow-2xl hover:-translate-y-3 hover:border-yellow-300 dark:hover:border-yellow-700 transition-all duration-500 border border-gray-100 dark:border-gray-700">
 
-              <div className="w-14 h-14 rounded-xl bg-yellow-100 dark:bg-yellow-900/50 flex items-center justify-center text-2xl mb-5 group-hover:scale-110 transition duration-300">
+              <div className="w-14 h-14 rounded-xl bg-yellow-100 dark:bg-yellow-900/50 flex items-center justify-center text-2xl mb-5 group-hover:scale-110 group-hover:rotate-6 transition duration-500">
                 ⭐
               </div>
 
@@ -273,15 +425,15 @@ function AboutUs() {
       </section>
 
       {/* ================= E-COMMERCE JOURNEY ================= */}
-      <section className="max-w-6xl mx-auto w-full px-6 py-16 md:py-20">
+      <section className="max-w-6xl mx-auto w-full px-6 py-14 md:py-18">
 
-        <div className="text-center mb-12">
+        <div className="text-center mb-10">
 
           <span className="text-sm font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
             Our Story
           </span>
 
-          <h2 className="text-3xl md:text-4xl font-bold mt-2">
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">
             Our E-Commerce Journey
           </h2>
 
@@ -297,7 +449,7 @@ function AboutUs() {
         <div className="grid md:grid-cols-3 gap-6">
 
           {/* Wide Range */}
-          <div className="group bg-white dark:bg-gray-800 rounded-2xl shadow-md p-7 border border-gray-100 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
+          <div className="group bg-white dark:bg-gray-800 rounded-2xl shadow-md p-7 border border-gray-100 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-3 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-500">
 
             <div className="w-14 h-14 rounded-xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-2xl mb-5 group-hover:rotate-6 group-hover:scale-110 transition duration-300">
               🛒
@@ -315,7 +467,7 @@ function AboutUs() {
           </div>
 
           {/* Secure Shopping */}
-          <div className="group bg-white dark:bg-gray-800 rounded-2xl shadow-md p-7 border border-gray-100 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
+          <div className="group bg-white dark:bg-gray-800 rounded-2xl shadow-md p-7 border border-gray-100 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-3 hover:border-green-300 dark:hover:border-green-700 transition-all duration-500">
 
             <div className="w-14 h-14 rounded-xl bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-2xl mb-5 group-hover:rotate-6 group-hover:scale-110 transition duration-300">
               🔒
@@ -333,7 +485,7 @@ function AboutUs() {
           </div>
 
           {/* Customer First */}
-          <div className="group bg-white dark:bg-gray-800 rounded-2xl shadow-md p-7 border border-gray-100 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
+          <div className="group bg-white dark:bg-gray-800 rounded-2xl shadow-md p-7 border border-gray-100 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-3 hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-500">
 
             <div className="w-14 h-14 rounded-xl bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-2xl mb-5 group-hover:rotate-6 group-hover:scale-110 transition duration-300">
               👥
@@ -354,22 +506,24 @@ function AboutUs() {
       </section>
 
       {/* ================= CONTACT SECTION ================= */}
-      <section className="relative bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-blue-900 dark:to-indigo-950 text-white py-16 md:py-20 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-blue-900 dark:to-indigo-950 text-white py-14 md:py-18 overflow-hidden">
 
         {/* Decorative background */}
-        <div className="absolute -right-20 -top-20 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute -right-20 -top-20 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
 
         <div className="absolute -left-20 -bottom-20 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
 
+        <div className="absolute top-1/2 right-1/3 w-24 h-24 border border-white/10 rounded-full hidden md:block"></div>
+
         <div className="relative max-w-6xl mx-auto px-6">
 
-          <div className="text-center mb-12">
+          <div className="text-center mb-10">
 
             <span className="text-sm font-semibold uppercase tracking-wider text-blue-100">
               Get In Touch
             </span>
 
-            <h2 className="text-3xl md:text-4xl font-bold mt-2">
+            <h2 className="text-3xl md:text-4xl font-bold mt-2 hover:scale-105 transition-transform duration-300">
               Contact Us
             </h2>
 
@@ -383,9 +537,9 @@ function AboutUs() {
           <div className="grid md:grid-cols-3 gap-6">
 
             {/* Email */}
-            <div className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-7 text-center hover:bg-white/20 hover:-translate-y-2 transition-all duration-500">
+            <div className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-7 text-center hover:bg-white/20 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500">
 
-              <div className="text-4xl mb-4 group-hover:scale-110 transition duration-300">
+              <div className="text-4xl mb-4 group-hover:scale-125 group-hover:-rotate-6 transition duration-300">
                 📧
               </div>
 
@@ -394,15 +548,15 @@ function AboutUs() {
               </h3>
 
               <p className="text-blue-100 break-all">
-                support@shopify.com
+                support@swiftcart.com
               </p>
 
             </div>
 
             {/* Phone */}
-            <div className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-7 text-center hover:bg-white/20 hover:-translate-y-2 transition-all duration-500">
+            <div className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-7 text-center hover:bg-white/20 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500">
 
-              <div className="text-4xl mb-4 group-hover:scale-110 transition duration-300">
+              <div className="text-4xl mb-4 group-hover:scale-125 group-hover:-rotate-6 transition duration-300">
                 📞
               </div>
 
@@ -417,9 +571,9 @@ function AboutUs() {
             </div>
 
             {/* Address */}
-            <div className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-7 text-center hover:bg-white/20 hover:-translate-y-2 transition-all duration-500">
+            <div className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-7 text-center hover:bg-white/20 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500">
 
-              <div className="text-4xl mb-4 group-hover:scale-110 transition duration-300">
+              <div className="text-4xl mb-4 group-hover:scale-125 group-hover:-rotate-6 transition duration-300">
                 📍
               </div>
 
@@ -435,11 +589,11 @@ function AboutUs() {
 
           </div>
 
-          <div className="text-center mt-10">
+          <div className="text-center mt-9">
 
             <button
               onClick={() => navigate(-1)}
-              className="px-7 py-3 bg-white text-blue-700 font-semibold rounded-lg shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
+              className="px-7 py-3 bg-white text-blue-700 font-semibold rounded-lg shadow-lg hover:shadow-2xl hover:-translate-y-1 hover:scale-105 transition-all duration-300"
             >
               ← Go Back
             </button>
