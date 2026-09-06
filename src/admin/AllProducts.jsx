@@ -30,9 +30,15 @@ function AllProducts() {
       try {
         const res = await fetch(`${process.env.REACT_APP_API_URL}/categories`, {
           credentials: "include",
-        });
-        const data = await res.json();
-        setCategories(data);
+        });const data = await res.json();
+
+if (Array.isArray(data)) {
+  setCategories(data);
+} else if (Array.isArray(data.categories)) {
+  setCategories(data.categories);
+} else {
+  setCategories([]);
+}
       } catch (err) {
         console.error("Error fetching categories:", err);
       }
@@ -116,7 +122,8 @@ function AllProducts() {
           className="flex-1 border px-3 py-2 rounded dark:bg-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-indigo-400"
         >
           <option value="All">All Categories</option>
-          {categories.map((cat) => (
+          {Array.isArray(categories) &&
+  categories.map((cat) => (
             <option key={cat._id} value={cat._id}>
               {cat.name}
             </option>

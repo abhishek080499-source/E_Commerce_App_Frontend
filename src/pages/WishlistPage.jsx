@@ -76,6 +76,7 @@ function Wishlist() {
           credentials: "include",
         }
       );
+        localStorage.removeItem("user");
     } catch (err) {
       console.log(err);
     }

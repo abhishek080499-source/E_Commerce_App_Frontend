@@ -41,18 +41,29 @@ function ProductDetail() {
       console.error("Error fetching products:", err);
     }
   }
-
-  async function fetchCategories() {
-    try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/categories`, {
+async function fetchCategories() {
+  try {
+    const res = await fetch(
+      `${process.env.REACT_APP_API_URL}/categories`,
+      {
         credentials: "include",
-      });
-      const cats = await res.json();
-      setCategories(cats);
-    } catch (err) {
-      console.error("Error fetching categories:", err);
+      }
+    );
+
+    const data = await res.json();
+
+    if (Array.isArray(data)) {
+      setCategories(data);
+    } else if (Array.isArray(data.categories)) {
+      setCategories(data.categories);
+    } else {
+      setCategories([]);
     }
+  } catch (err) {
+    console.error("Error fetching categories:", err);
+    setCategories([]);
   }
+}
 
   // ✅ Apply filters
   const filteredProducts = products
@@ -65,6 +76,7 @@ function ProductDetail() {
       return 0;
     });
 
+    
 
      const totalPages = Math.ceil(filteredProducts.length / resultsPerPage);
   const paginated = filteredProducts.slice(

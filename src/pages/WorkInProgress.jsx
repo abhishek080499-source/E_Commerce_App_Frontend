@@ -24,6 +24,7 @@ function WorkInProgress() {
           credentials: "include",
         }
       );
+        localStorage.removeItem("user");
     } catch (err) {
       console.error("Logout error:", err);
     }

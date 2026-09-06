@@ -103,14 +103,17 @@ function Categories() {
   };
 
   // ✅ Pagination logic
-  const totalPages = Math.ceil(categories.length / resultsPerPage);
-  const paginatedCategories = categories.slice(
+  const safeCategories = Array.isArray(categories)
+  ? categories
+  : [];
+  const totalPages = Math.ceil(safeCategories.length / resultsPerPage);
+  const paginatedCategories = safeCategories.slice(
     (currentPage - 1) * resultsPerPage,
     currentPage * resultsPerPage
   );
 
   // ✅ Summary with countup
-  const totalCategories = useCountUp(categories.length, 1200);
+  const totalCategories = useCountUp(safeCategories.length, 1200);
 
   if (loading) {
     return <p className="p-6 dark:text-white">Loading categories...</p>;

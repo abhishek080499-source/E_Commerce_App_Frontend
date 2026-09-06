@@ -28,6 +28,7 @@ function AboutUs() {
           credentials: "include",
         }
       );
+        localStorage.removeItem("user");
     } catch (err) {
       console.error(err);
     }

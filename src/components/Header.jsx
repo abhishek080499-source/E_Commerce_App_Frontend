@@ -26,6 +26,9 @@ function Header({ toggleSidebar }) {
         method: "POST",
         credentials: "include",
       });
+
+
+      localStorage.removeItem("user");
     } catch (err) {
       console.error("Logout error:", err);
     }

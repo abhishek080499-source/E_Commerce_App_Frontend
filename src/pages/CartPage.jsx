@@ -48,6 +48,7 @@ function CartPage() {
         `${process.env.REACT_APP_API_URL}/auth/logout`,
         { method: "POST", credentials: "include" }
       );
+        localStorage.removeItem("user");
     } catch (err) {
       console.error(err);
     }

@@ -76,9 +76,118 @@ function CreateAccount() {
 
         {/* Brand */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold tracking-tight text-yellow-400">
-            Shopify
-          </h1>
+
+
+{/* =========================
+    BRAND
+========================== */}
+
+{/* SwiftCart Logo + Name */}
+<div
+  className="
+    inline-flex
+    items-center
+    gap-2.5
+    cursor-pointer
+    group
+    select-none
+  "
+>
+  {/* Logo */}
+  <div
+    className="
+      relative
+      w-9 h-9
+      sm:w-10 sm:h-10
+      flex-shrink-0
+      rounded-xl
+      flex
+      items-center
+      justify-center
+      bg-white
+      dark:bg-gray-800
+      border
+      border-gray-200
+      dark:border-gray-700
+      shadow-sm
+      group-hover:shadow-md
+      group-hover:border-blue-200
+      dark:group-hover:border-blue-500/40
+      group-hover:scale-105
+      transition-all
+      duration-300
+      overflow-hidden
+    "
+  >
+    <img
+      src="/favicon.png"
+      alt="SwiftCart Logo"
+      className="
+        w-[78%]
+        h-[78%]
+        object-contain
+        transition-transform
+        duration-300
+        group-hover:scale-110
+      "
+    />
+
+    {/* Small glow */}
+    <div
+      className="
+        absolute
+        inset-0
+        rounded-xl
+        bg-blue-500/0
+        group-hover:bg-blue-500/5
+        transition-colors
+        duration-300
+      "
+    />
+  </div>
+
+  {/* Brand Name */}
+  <div className="whitespace-nowrap text-left leading-none">
+    <h2
+      className="
+        text-lg
+        sm:text-xl
+        font-extrabold
+        tracking-tight
+        text-gray-800
+        dark:text-white
+        group-hover:text-blue-600
+        dark:group-hover:text-blue-400
+        transition-colors
+        duration-300
+      "
+    >
+      SwiftCart
+    </h2>
+
+    <p
+      className="
+        mt-1
+        text-[8px]
+        sm:text-[9px]
+        font-semibold
+        tracking-[0.14em]
+        text-gray-500
+        dark:text-gray-400
+        uppercase
+        transition-colors
+        duration-300
+        group-hover:text-gray-600
+        dark:group-hover:text-gray-300
+      "
+    >
+      Shop Smart • Shop Fast
+    </p>
+  </div>
+</div>
+
+
+
 
           <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
             Create your account

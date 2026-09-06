@@ -127,10 +127,23 @@ function App() {
             </ProtectedRoute>
           }
         />
+<Route
+  path="/about-us"
+  element={
+    <ProtectedRoute allowedRoles={["customer"]}>
+      <AboutUs />
+    </ProtectedRoute>
+  }
+/>
 
-        {/* General routes */}
-        <Route path="/about-us" element={<AboutUs />} />
-        <Route path="/work-in-progress" element={<WorkInProgress />} />
+<Route
+  path="/work-in-progress"
+  element={
+    <ProtectedRoute allowedRoles={["customer"]}>
+      <WorkInProgress />
+    </ProtectedRoute>
+  }
+/>
         {/* Catch-all route for 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>

@@ -15,8 +15,15 @@ function AllUsers() {
         const res = await fetch(`${process.env.REACT_APP_API_URL}/users`, {
           credentials: "include",
         });
-        const data = await res.json();
-        setUsers(data);
+      const data = await res.json();
+
+if (Array.isArray(data)) {
+  setUsers(data);
+} else if (Array.isArray(data.users)) {
+  setUsers(data.users);
+} else {
+  setUsers([]);
+}
       } catch (err) {
         console.error("Error fetching users:", err);
         setUsers([]);

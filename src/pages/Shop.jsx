@@ -103,6 +103,7 @@ function Shop() {
           credentials: "include",
         }
       );
+        localStorage.removeItem("user");
     } catch (err) {
       console.error(err);
     }
