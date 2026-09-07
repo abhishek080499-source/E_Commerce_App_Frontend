@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiFetch } from "../api";
 
+
 function Header({ toggleSidebar }) {
   const navigate = useNavigate();
 
@@ -12,6 +13,7 @@ function Header({ toggleSidebar }) {
   );
   const [unreadCount, setUnreadCount] = useState(0);
 
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const profileRef = useRef(null);
 
   // Always read from stored user object
@@ -21,21 +23,27 @@ function Header({ toggleSidebar }) {
   // ===============================
   // Logout
   // ===============================
-  const handleLogout = async () => {
-    try {
-      await apiFetch(`${process.env.REACT_APP_API_URL}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
+const handleLogout = async () => {
+  if (isLoggingOut) return;
 
+  setIsLoggingOut(true);
 
-      localStorage.removeItem("user");
-    } catch (err) {
-      console.error("Logout error:", err);
-    }
+  try {
+    await apiFetch(`${process.env.REACT_APP_API_URL}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
 
+    localStorage.removeItem("user");
     navigate("/login");
-  };
+  } catch (err) {
+    console.error("Logout error:", err);
+    localStorage.removeItem("user");
+    navigate("/login");
+  } finally {
+    setIsLoggingOut(false);
+  }
+};
 
   // ===============================
   // Close profile when clicking outside
@@ -243,12 +251,13 @@ function Header({ toggleSidebar }) {
                 </div>
 
                 {/* Logout */}
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white transition-colors duration-200"
-                >
-                  Logout
-                </button>
+<button
+  onClick={handleLogout}
+  disabled={isLoggingOut}
+  className="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white transition-colors duration-200 disabled:opacity-50"
+>
+  {isLoggingOut ? "Logging out..." : "Logout"}
+</button>
 
               </div>
             )}

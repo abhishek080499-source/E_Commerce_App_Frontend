@@ -12,6 +12,7 @@ function CustomerNavbar({
   const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const [isDarkMode, setIsDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
@@ -57,6 +58,23 @@ function CustomerNavbar({
       handleSearch();
     }
   };
+
+  // -------------------------
+// Logout
+// -------------------------
+const handleLogout = async () => {
+  if (isLoggingOut) return;
+
+  setIsLoggingOut(true);
+  setIsOpen(false);
+
+  try {
+    await onLogout();
+  } catch (error) {
+    console.error("Logout failed:", error);
+    setIsLoggingOut(false);
+  }
+};
 
   // -------------------------
   // Search Input Change
@@ -495,23 +513,26 @@ function CustomerNavbar({
           </button>
 
           {/* Logout */}
-          <button
-            onClick={onLogout}
-            className="
-              bg-red-600
-              hover:bg-red-700
-              text-white
-              px-4 py-2
-              rounded-lg
-              font-medium
-              shadow-sm
-              hover:shadow-md
-              hover:-translate-y-0.5
-              transition-all duration-300
-            "
-          >
-            Logout
-          </button>
+        <button
+  onClick={handleLogout}
+  disabled={isLoggingOut}
+  className={`
+    bg-red-600
+    text-white
+    px-4 py-2
+    rounded-lg
+    font-medium
+    shadow-sm
+    transition-all duration-300
+    ${
+      isLoggingOut
+        ? "opacity-60 cursor-not-allowed"
+        : "hover:bg-red-700 hover:shadow-md hover:-translate-y-0.5"
+    }
+  `}
+>
+  {isLoggingOut ? "Logging out..." : "Logout"}
+</button>
         </div>
       </div>
 
@@ -763,27 +784,27 @@ function CustomerNavbar({
             </button>
 
             {/* Logout */}
-            <button
-              onClick={() => {
-                setIsOpen(false);
-                onLogout();
-              }}
-              className="
-                bg-red-600
-                hover:bg-red-700
-                text-white
-                px-3 sm:px-4
-                py-2.5
-                rounded-lg
-                text-sm
-                font-medium
-                shadow-sm
-                transition-all duration-300
-                hover:-translate-y-0.5
-              "
-            >
-              Logout
-            </button>
+<button
+  onClick={handleLogout}
+  disabled={isLoggingOut}
+  className={`
+    text-white
+    px-3 sm:px-4
+    py-2.5
+    rounded-lg
+    text-sm
+    font-medium
+    shadow-sm
+    transition-all duration-300
+    ${
+      isLoggingOut
+        ? "bg-red-600 opacity-60 cursor-not-allowed"
+        : "bg-red-600 hover:bg-red-700 hover:-translate-y-0.5"
+    }
+  `}
+>
+  {isLoggingOut ? "Logging out..." : "Logout"}
+</button>
           </div>
         </div>
       </div>
