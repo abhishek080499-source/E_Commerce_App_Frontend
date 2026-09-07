@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setWishlist } from "../../redux/wishlistSlice";
@@ -13,6 +13,8 @@ function ProductCard({
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const [showDescription, setShowDescription] = useState(false);
   const [showName, setShowName] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
+  const addedTimeoutRef = useRef(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -20,6 +22,14 @@ function ProductCard({
   const handleBuyNow = () => {
     addToCart(product);
     navigate("/cart");
+  };
+
+  const handleAddToCart = () => {
+    addToCart(product);
+    setJustAdded(true);
+
+    if (addedTimeoutRef.current) clearTimeout(addedTimeoutRef.current);
+    addedTimeoutRef.current = setTimeout(() => setJustAdded(false), 1500);
   };
 
   // Check if product exists in wishlist
@@ -126,7 +136,7 @@ function ProductCard({
           handleWishlist();
         }}
         aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-        className={`absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-900/90 text-base transition ${
+        className={`absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-900/90 text-base transition active:scale-90 ${
           wishlistLoading ? "opacity-50 cursor-not-allowed" : "hover:border-yellow-400"
         }`}
       >
@@ -152,7 +162,7 @@ function ProductCard({
             src={product.imageUrl}
             alt={product.itemName}
             onClick={() => setShowModal(true)}
-            className="h-40 w-full object-contain cursor-pointer border-b border-gray-100 dark:border-gray-800 pb-4 transition duration-300 hover:opacity-90"
+            className="h-40 w-full object-contain cursor-pointer border-b border-gray-100 dark:border-gray-800 pb-4 transition duration-300 hover:opacity-90 active:opacity-80"
           />
         ) : (
           <div className="h-40 w-full flex items-center justify-center border-b border-gray-100 dark:border-gray-800 pb-4 text-gray-400 dark:text-gray-500">
@@ -237,15 +247,27 @@ function ProductCard({
             ) : (
               <>
                 <button
-                  onClick={() => addToCart(product)}
-                  className="px-4 py-2 rounded-[4px] w-full border border-blue-500 dark:border-blue-400 text-blue-500 dark:text-blue-400 transition hover:bg-blue-500 hover:text-white dark:hover:bg-blue-400 dark:hover:text-gray-900"
+                  onClick={handleAddToCart}
+                  disabled={justAdded}
+                  className={`px-4 py-2 rounded-[4px] w-full border transition-all duration-200 active:scale-95 flex items-center justify-center gap-1.5 ${
+                    justAdded
+                      ? "border-green-500 bg-green-500 text-white dark:border-green-400 dark:bg-green-500"
+                      : "border-blue-500 dark:border-blue-400 text-blue-500 dark:text-blue-400 hover:bg-blue-500 hover:text-white dark:hover:bg-blue-400 dark:hover:text-gray-900"
+                  }`}
                 >
-                  Add to cart
+                  {justAdded ? (
+                    <>
+                      <span className="inline-block animate-[bounce_0.4s_ease-in-out]">✓</span>
+                      Added
+                    </>
+                  ) : (
+                    "Add to cart"
+                  )}
                 </button>
 
                 <button
                   onClick={handleBuyNow}
-                  className="px-4 py-2 rounded-[4px] w-full bg-blue-500 dark:bg-blue-400 text-white dark:text-gray-900 transition hover:bg-yellow-400 hover:text-gray-900 dark:hover:bg-yellow-500 dark:hover:text-gray-900"
+                  className="px-4 py-2 rounded-[4px] w-full bg-blue-500 dark:bg-blue-400 text-white dark:text-gray-900 transition hover:bg-yellow-400 hover:text-gray-900 dark:hover:bg-yellow-500 dark:hover:text-gray-900 active:scale-95"
                 >
                   Buy now
                 </button>
@@ -273,7 +295,7 @@ function ProductCard({
 
             <button
               onClick={() => setShowModal(false)}
-              className="mt-4 border border-blue-500 dark:border-blue-400 text-blue-500 dark:text-blue-400 px-4 py-2 rounded-[4px] hover:bg-yellow-400 hover:text-gray-900 hover:border-yellow-400 dark:hover:bg-yellow-500 dark:hover:text-gray-900"
+              className="mt-4 border border-blue-500 dark:border-blue-400 text-blue-500 dark:text-blue-400 px-4 py-2 rounded-[4px] hover:bg-yellow-400 hover:text-gray-900 hover:border-yellow-400 dark:hover:bg-yellow-500 dark:hover:text-gray-900 active:scale-95"
             >
               Close
             </button>
