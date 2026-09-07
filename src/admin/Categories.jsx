@@ -125,7 +125,7 @@ function Categories() {
 
       {/* Summary */}
       <div className="mb-6">
-        <div className="bg-white dark:bg-gray-800 p-4 rounded shadow hover:scale-105 hover:shadow-lg transition">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded shadow hover:scale-[1.03] hover:shadow-lg transition">
           <p className="text-gray-700 dark:text-gray-200 font-semibold">
             Total Categories: <span className="text-xl font-bold dark:text-white">{totalCategories}</span>
           </p>

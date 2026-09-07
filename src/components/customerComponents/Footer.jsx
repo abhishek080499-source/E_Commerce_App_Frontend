@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 function Footer() {
   return (
-    <footer className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white px-6 py-10 mt-10 transition-colors duration-300">
+    <footer className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white px-6 py-10 mt-10 mb-3 transition-colors duration-300">
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
         
         {/* Contact */}
@@ -84,7 +84,7 @@ function Footer() {
 
 
       {/* Sticky bottom bar */}
-<div className="w-full bg-gray-900 text-center border-t border-gray-700 py-2 mt-8 fixed bottom-0 left-0 hover:bg-black transition duration-300">
+<div className="w-full bg-gray-900 text-center border-t border-gray-700 py-2 mt-8 fixed bottom-0 left-0 hover:bg-black transition duration-300 z-50">
   <div className="flex items-center justify-center gap-2">
     <img
       src="/favicon.png"

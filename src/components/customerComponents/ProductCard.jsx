@@ -3,14 +3,16 @@ import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setWishlist } from "../../redux/wishlistSlice";
 
-
 function ProductCard({
   product,
   addToCart,
   wishlistItems = [],
 }) {
   const [showModal, setShowModal] = useState(false);
-const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [showDescription, setShowDescription] = useState(false);
+  const [showName, setShowName] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -26,8 +28,9 @@ const [wishlistLoading, setWishlistLoading] = useState(false);
   );
 
   const handleWishlist = async () => {
- if (wishlistLoading) return;
-  setWishlistLoading(true);
+    if (wishlistLoading) return;
+    setWishlistLoading(true);
+
     try {
       if (isWishlisted) {
         const res = await fetch(
@@ -55,16 +58,19 @@ const [wishlistLoading, setWishlistLoading] = useState(false);
           }
         }
       } else {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/wishlist`, {
-  method: "POST",
-  credentials: "include",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    productId: product._id,
-  }),
-});
+        const res = await fetch(
+          `${process.env.REACT_APP_API_URL}/wishlist`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              productId: product._id,
+            }),
+          }
+        );
 
         const data = await res.json();
 
@@ -85,116 +91,179 @@ const [wishlistLoading, setWishlistLoading] = useState(false);
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      setWishlistLoading(false);
     }
-    finally {
-    setWishlistLoading(false);
-  }
   };
 
-  return (
-    <div className="relative bg-white dark:bg-gray-900 rounded-lg shadow-md p-4 flex flex-col justify-between text-center transition duration-300 transform hover:scale-105 hover:shadow-xl">
+  const isOut = product.availableQuantity === 0;
+  const isLow = !isOut && product.availableQuantity < 10;
 
-      {/* Wishlist Button */}
-<button
-  disabled={wishlistLoading}
-  onClick={(e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    handleWishlist();
-  }}
-className={`absolute top-3 right-3 z-20 text-2xl bg-black dark:bg-gray-800 rounded-full p-2 transition ${
-  wishlistLoading
-    ? "opacity-50 cursor-not-allowed"
-    : "hover:scale-110"
-}`}
->
-{wishlistLoading ? "⏳" : isWishlisted ? "❤️" : "🤍"}
-</button>
+  return (          
+    <div
+      className="
+        group relative h-full flex flex-col
+        bg-white dark:bg-gray-900
+        border border-gray-200 
+        hover:bg-gray-300
+        hover:dark:bg-gray-800 dark:border-gray-700
+        rounded-[6px]
+        transition-shadow duration-300 ease-out
+        hover:shadow-[0_10px_28px_-12px_rgba(59,130,246,0.30)]
+        dark:hover:shadow-[0_10px_28px_-12px_rgba(0,0,0,0.6)]
+      "
+    >
+      {/* Thin inner keyline for a bit of depth without gradients */}
+      <div className="pointer-events-none absolute inset-[3px] rounded-[4px] border border-gray-300 dark:border-gray-800 " />
 
-      {/* Image */}
-      {product.imageUrl ? (
-        <img
-          src={product.imageUrl}
-          alt={product.itemName}
-          onClick={() => setShowModal(true)}
-          className="h-40 w-full object-contain mb-4 rounded-md cursor-pointer transition duration-300 hover:opacity-90"
-        />
-      ) : (
-        <div className="h-40 w-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center mb-4 rounded-md">
-          No Image
-        </div>
-      )}
-
-      {/* Product Name */}
-      <Link
-        to={`/shop/${product._id}`}
-        className="font-semibold text-lg mb-2 text-gray-900 dark:text-white hover:text-blue-600"
-      >
-        {product.itemName}
-      </Link>
-
-      {/* Description */}
-      <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
-        {product.description || "No description available"}
-      </p>
-
-      {/* Price */}
-      <p className="text-green-600 dark:text-green-400 font-bold mb-2">
-        ₹{product.price}
-      </p>
-
-      {/* Stock */}
-      <p
-        className={`text-sm mb-4 ${
-          product.availableQuantity === 0
-            ? "text-red-600 font-semibold"
-            : product.availableQuantity < 10
-            ? "text-red-500 font-semibold"
-            : "text-gray-500 dark:text-gray-300"
+      {/* Wishlist */}
+      <button
+        disabled={wishlistLoading}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleWishlist();
+        }}
+        aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+        className={`absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-900/90 text-base transition ${
+          wishlistLoading ? "opacity-50 cursor-not-allowed" : "hover:border-yellow-400"
         }`}
       >
-        {product.availableQuantity === 0
-          ? "Out of Stock"
-          : product.availableQuantity < 10
-          ? `Only ${product.availableQuantity} left`
-          : `Available: ${product.availableQuantity}`}
-      </p>
+        {wishlistLoading ? "⏳" : isWishlisted ? "❤️" : "🤍"}
+      </button>
 
-      {/* Buttons */}
-      <div className="mt-auto w-full flex flex-col sm:flex-row gap-3">
-        {product.availableQuantity === 0 ? (
-          <button
-            disabled
-            className="px-4 py-2 rounded w-full bg-gray-400 text-white cursor-not-allowed"
-          >
-            Unavailable
-          </button>
+      {/* Stock tag, top-left */}
+      {isOut && (
+        <span className="absolute top-3 left-3 z-20 px-2.5 py-1 text-[11px] font-medium tracking-wide rounded-[3px] bg-red-500 text-white">
+          Out of stock
+        </span>
+      )}
+      {isLow && (
+        <span className="absolute top-3 left-3 z-20 px-2.5 py-1 text-[11px] font-medium tracking-wide rounded-[3px] bg-yellow-400 text-gray-900">
+          {`${product.availableQuantity} left`}
+        </span>
+      )}
+
+      {/* Image, framed like a plate */}
+      <div className="px-5 pt-5">
+        {product.imageUrl ? (
+          <img
+            src={product.imageUrl}
+            alt={product.itemName}
+            onClick={() => setShowModal(true)}
+            className="h-40 w-full object-contain cursor-pointer border-b border-gray-100 dark:border-gray-800 pb-4 transition duration-300 hover:opacity-90"
+          />
         ) : (
-          <>
-            <button
-              onClick={() => addToCart(product)}
-              className="px-4 py-2 rounded w-full bg-blue-500 hover:bg-blue-600 text-white"
-            >
-              Add to Cart
-            </button>
-
-            <button
-              onClick={handleBuyNow}
-              className="px-4 py-2 rounded w-full bg-green-500 hover:bg-green-600 text-white"
-            >
-              Buy Now
-            </button>
-          </>
+          <div className="h-40 w-full flex items-center justify-center border-b border-gray-100 dark:border-gray-800 pb-4 text-gray-400 dark:text-gray-500">
+            No image
+          </div>
         )}
       </div>
 
-      {/* Image Modal */}
+      <div className="flex flex-col flex-1 px-5 pb-5 pt-4 text-left">
+        {/* Name */}
+        <div className="mb-1.5 min-w-0">
+          <Link
+            to={`/shop/${product._id}`}
+            className={`font-serif text-lg leading-snug text-gray-900 dark:text-white hover:text-blue-500 dark:hover:text-blue-400 transition duration-300 [overflow-wrap:anywhere] ${
+              showName ? "block" : "line-clamp-2"
+            }`}
+          >
+            {product.itemName.toUpperCase()}
+          </Link>
+
+          {product.itemName && product.itemName.length > 50 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowName((prev) => !prev);
+              }}
+              className="text-blue-500 dark:text-blue-400 hover:text-yellow-500 dark:hover:text-yellow-400 text-xs mt-1"
+            >
+              {showName ? "Show less" : "Read more"}
+            </button>
+          )}
+        </div>
+
+        {/* Description */}
+        <div className="mb-3">
+          <p
+            onClick={() => setShowDescription(!showDescription)}
+            className={`text-gray-500 dark:text-gray-400 text-sm cursor-pointer [overflow-wrap:anywhere] ${
+              showDescription ? "" : "line-clamp-2"
+            }`}
+          >
+            {product.description || "No description available"}
+          </p>
+
+          {product.description && product.description.length > 60 && (
+            <button
+              onClick={() => setShowDescription(!showDescription)}
+              className="text-blue-500 dark:text-blue-400 hover:text-yellow-500 dark:hover:text-yellow-400 text-xs mt-1"
+            >
+              {showDescription ? "Show less" : "Read more"}
+            </button>
+          )}
+        </div>
+
+        <div className="mt-auto">
+          {/* Divider */}
+          <div className="border-t border-gray-100 dark:border-gray-800 mb-3" />
+
+          {/* Price + availability row */}
+          <div className="flex items-baseline justify-between mb-4">
+            <p className="font-serif text-xl text-blue-500 dark:text-blue-400">
+              ₹{product.price}
+            </p>
+            {!isOut && !isLow && (
+              <span className="px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">
+                {product.availableQuantity} available
+              </span>
+            )}
+          </div>
+
+          {/* Buttons */}
+          <div className="w-full flex flex-col sm:flex-row gap-3">
+            {isOut ? (
+              <button
+                disabled
+                className="px-4 py-2 rounded-[4px] w-full border border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+              >
+                Unavailable
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => addToCart(product)}
+                  className="px-4 py-2 rounded-[4px] w-full border border-blue-500 dark:border-blue-400 text-blue-500 dark:text-blue-400 transition hover:bg-blue-500 hover:text-white dark:hover:bg-blue-400 dark:hover:text-gray-900"
+                >
+                  Add to cart
+                </button>
+
+                <button
+                  onClick={handleBuyNow}
+                  className="px-4 py-2 rounded-[4px] w-full bg-blue-500 dark:bg-blue-400 text-white dark:text-gray-900 transition hover:bg-yellow-400 hover:text-gray-900 dark:hover:bg-yellow-500 dark:hover:text-gray-900"
+                >
+                  Buy now
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Image modal */}
       {showModal && (
         <div
           className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
           onClick={() => setShowModal(false)}
         >
-          <div className="bg-white dark:bg-gray-900 p-4 rounded-lg max-w-3xl">
+          <div
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-4 rounded-[6px] max-w-3xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <img
               src={product.imageUrl}
               alt={product.itemName}
@@ -203,7 +272,7 @@ className={`absolute top-3 right-3 z-20 text-2xl bg-black dark:bg-gray-800 round
 
             <button
               onClick={() => setShowModal(false)}
-              className="mt-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              className="mt-4 border border-blue-500 dark:border-blue-400 text-blue-500 dark:text-blue-400 px-4 py-2 rounded-[4px] hover:bg-yellow-400 hover:text-gray-900 hover:border-yellow-400 dark:hover:bg-yellow-500 dark:hover:text-gray-900"
             >
               Close
             </button>
@@ -211,6 +280,7 @@ className={`absolute top-3 right-3 z-20 text-2xl bg-black dark:bg-gray-800 round
         </div>
       )}
     </div>
+    
   );
 }
 
