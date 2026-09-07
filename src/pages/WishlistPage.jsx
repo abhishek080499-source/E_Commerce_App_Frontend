@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { setWishlist } from "../redux/wishlistSlice";
+import { apiFetch } from "../api";
 
 import CustomerNavbar from "../components/customerComponents/CustomerNavbar";
 import ProductCard from "../components/customerComponents/ProductCard";
@@ -41,7 +42,7 @@ function Wishlist() {
   // ==============================
   const fetchWishlist = async () => {
     try {
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/wishlist`,
         {
           credentials: "include",
@@ -69,7 +70,7 @@ function Wishlist() {
   // ==============================
   const handleLogout = async () => {
     try {
-      await fetch(
+      await apiFetch(
         `${process.env.REACT_APP_API_URL}/auth/logout`,
         {
           method: "POST",

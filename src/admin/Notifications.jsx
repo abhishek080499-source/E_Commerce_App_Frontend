@@ -1,6 +1,7 @@
 // src/admin/Notifications.jsx
 import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
+import { apiFetch } from "../api";
 
 function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -12,7 +13,7 @@ function Notifications() {
   useEffect(() => {
     async function fetchNotifications() {
       try {
-        const res = await fetch(
+        const res = await apiFetch(
           `${process.env.REACT_APP_API_URL}/notifications`,
           {
             credentials: "include",
@@ -62,7 +63,7 @@ function Notifications() {
 
   const deleteNotification = async (id) => {
     try {
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/notifications/${id}`,
         {
           method: "DELETE",
@@ -97,7 +98,7 @@ function Notifications() {
     if (!newQuantity) return;
 
     try {
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/products/${productId}`,
         {
           method: "PUT",

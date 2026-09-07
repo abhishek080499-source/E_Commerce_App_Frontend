@@ -4,6 +4,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import imageCompression from "browser-image-compression";
 import Pagination from "../components/Pagination";
+import {apiFetch} from "../api";
 
 const MAX_DIGITS = 8;
 const MAX_QUANTITY = 10000;
@@ -85,7 +86,7 @@ function AddProducts() {
 
   async function fetchProducts() {
     try {
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/products`,
         { credentials: "include" }
       );
@@ -102,7 +103,7 @@ function AddProducts() {
 
   async function fetchCategories() {
     try {
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/categories`,
         { credentials: "include" }
       );
@@ -272,7 +273,7 @@ function AddProducts() {
         }
       }
 
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/products`,
         {
           method: "POST",
@@ -341,7 +342,7 @@ function AddProducts() {
     }
 
     try {
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/products/${id}`,
         {
           method: "DELETE",
@@ -461,7 +462,7 @@ function AddProducts() {
         }
       }
 
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/products/${id}`,
         {
           method: "PUT",

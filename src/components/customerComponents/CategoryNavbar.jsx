@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-
+import { apiFetch } from "../../api";
 function CategoryNavbar({ selectedCategory, setSelectedCategory }) {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const res = await fetch(
+        const res = await apiFetch(
           `${process.env.REACT_APP_API_URL || "http://localhost:5000"}/categories`,
           { credentials: "include" }
         );

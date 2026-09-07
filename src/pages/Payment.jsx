@@ -6,6 +6,7 @@ import CustomerNavbar from "../components/customerComponents/CustomerNavbar";
 import Footer from "../components/customerComponents/Footer";
 import { useSelector, useDispatch } from "react-redux";
 import { clearCart } from "../redux/cartSlice";
+import { apiFetch } from "../api";
 
 const Payment = () => {
   const navigate = useNavigate();
@@ -72,7 +73,7 @@ const Payment = () => {
         JSON.stringify(customer)
       );
 
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/payment/pay`,
         {
           method: "POST",
@@ -141,7 +142,7 @@ const Payment = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch(
+      await apiFetch(
         `${process.env.REACT_APP_API_URL}/auth/logout`,
         {
           method: "POST",

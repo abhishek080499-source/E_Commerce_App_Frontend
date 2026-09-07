@@ -5,6 +5,7 @@ import { Doughnut, Bar } from "react-chartjs-2";
 import Notification from "../admin/Notifications";
 
 import useCountUp from "../components/hook/UseCountUp";
+import { apiFetch } from "../api";
 
 import {
   Chart as ChartJS,
@@ -92,7 +93,7 @@ function Dashboard() {
 
       const queryString = queryParams.toString();
 
-      const response = await fetch(
+      const response = await apiFetch(
         `${process.env.REACT_APP_API_URL}/products${
           queryString ? `?${queryString}` : ""
         }`,
@@ -168,7 +169,7 @@ function Dashboard() {
     }
 
     try {
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/products/${id}`,
         {
           method: "DELETE",
@@ -354,7 +355,7 @@ function Dashboard() {
         formData.append("image", editImage);
       }
 
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/products/${id}`,
         {
           method: "PUT",
@@ -425,7 +426,7 @@ function Dashboard() {
 
   async function fetchCategories() {
     try {
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/categories`,
         {
           credentials: "include",

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setWishlist } from "../../redux/wishlistSlice";
+import { apiFetch } from "../../api";
 
 function ProductCard({
   product,
@@ -33,7 +34,7 @@ function ProductCard({
 
     try {
       if (isWishlisted) {
-        const res = await fetch(
+        const res = await apiFetch(
           `${process.env.REACT_APP_API_URL}/wishlist/${product._id}`,
           {
             method: "DELETE",
@@ -44,7 +45,7 @@ function ProductCard({
         const data = await res.json();
 
         if (data.success) {
-          const refresh = await fetch(
+          const refresh = await apiFetch(
             `${process.env.REACT_APP_API_URL}/wishlist`,
             {
               credentials: "include",
@@ -58,7 +59,7 @@ function ProductCard({
           }
         }
       } else {
-        const res = await fetch(
+        const res = await apiFetch(
           `${process.env.REACT_APP_API_URL}/wishlist`,
           {
             method: "POST",
@@ -75,7 +76,7 @@ function ProductCard({
         const data = await res.json();
 
         if (data.success) {
-          const refresh = await fetch(
+          const refresh = await apiFetch(
             `${process.env.REACT_APP_API_URL}/wishlist`,
             {
               credentials: "include",

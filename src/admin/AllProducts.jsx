@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import useCountUp from "../components/hook/UseCountUp";
 import Pagination from "../components/Pagination";
+import { apiFetch } from "../api";
 
 function AllProducts() {
   const [page, setPage] = useState(1);
@@ -14,7 +15,7 @@ function AllProducts() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/products`, {
+        const res = await apiFetch(`${process.env.REACT_APP_API_URL}/products`, {
           method: "GET",
           credentials: "include",
         });
@@ -28,9 +29,10 @@ function AllProducts() {
 
     const fetchCategories = async () => {
       try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/categories`, {
+        const res = await apiFetch(`${process.env.REACT_APP_API_URL}/categories`, {
           credentials: "include",
-        });const data = await res.json();
+        });
+            const data = await res.json();
 
 if (Array.isArray(data)) {
   setCategories(data);

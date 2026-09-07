@@ -12,6 +12,7 @@ import {
 import { useNavigate, Link } from "react-router-dom";
 import CustomerNavbar from "../components/customerComponents/CustomerNavbar";
 import Footer from "../components/customerComponents/Footer";
+import { apiFetch } from "../api";
 
 function CartPage() {
   const dispatch = useDispatch();
@@ -44,7 +45,7 @@ function CartPage() {
   // ===============================
   const handleLogout = async () => {
     try {
-      await fetch(
+      await apiFetch(
         `${process.env.REACT_APP_API_URL}/auth/logout`,
         { method: "POST", credentials: "include" }
       );

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import CustomerNavbar from "../components/customerComponents/CustomerNavbar";
 import Footer from "../components/customerComponents/Footer";
+import { apiFetch } from "../api";
 
 function AboutUs() {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ function AboutUs() {
   // ===============================
   const handleLogout = async () => {
     try {
-      await fetch(
+      await apiFetch(
         `${process.env.REACT_APP_API_URL}/auth/logout`,
         {
           method: "POST",

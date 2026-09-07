@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import useCountUp from "../components/hook/UseCountUp";
+import { apiFetch } from "../api";
 import Pagination from "../components/Pagination";
 
 function Bills() {
@@ -16,7 +17,7 @@ function Bills() {
   useEffect(() => {
     async function fetchBills() {
       try {
-        const res = await fetch(
+        const res = await apiFetch(
           `${process.env.REACT_APP_API_URL}/payment/all`,
           {
             credentials: "include",
@@ -45,7 +46,7 @@ function Bills() {
 
   const updateStatus = async (billNumber, status) => {
     try {
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/payment/status/${billNumber}`,
         {
           method: "PATCH",
@@ -87,7 +88,7 @@ function Bills() {
     }
 
     try {
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/payment/delete/${billNumber}`,
         {
           method: "DELETE",

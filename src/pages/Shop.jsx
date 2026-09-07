@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { apiFetch } from "../api";
 
 import { addToCart } from "../redux/cartSlice";
 
@@ -64,7 +65,7 @@ function Shop() {
 
         const queryString = queryParams.toString();
 
-        const res = await fetch(
+        const res = await apiFetch(
           `${process.env.REACT_APP_API_URL}/products${
             queryString ? `?${queryString}` : ""
           }`,
@@ -96,7 +97,7 @@ function Shop() {
   // ==========================
   const handleLogout = async () => {
     try {
-      await fetch(
+      await apiFetch(
         `${process.env.REACT_APP_API_URL}/auth/logout`,
         {
           method: "POST",

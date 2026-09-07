@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { apiFetch } from "../api";
 
 function Header({ toggleSidebar }) {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ function Header({ toggleSidebar }) {
   // ===============================
   const handleLogout = async () => {
     try {
-      await fetch(`${process.env.REACT_APP_API_URL}/auth/logout`, {
+      await apiFetch(`${process.env.REACT_APP_API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -75,7 +76,7 @@ function Header({ toggleSidebar }) {
   useEffect(() => {
     async function fetchNotifications() {
       try {
-        const res = await fetch(
+        const res = await  apiFetch(
           `${process.env.REACT_APP_API_URL}/notifications`,
           {
             credentials: "include",

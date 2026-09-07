@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import useCountUp from "../components/hook/UseCountUp"; 
 import Pagination from "../components/Pagination";
+import { apiFetch } from "../api";
 
 function Categories() {
   const [categories, setCategories] = useState([]);
@@ -16,7 +17,7 @@ function Categories() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/categories`, {
+        const res = await apiFetch(`${process.env.REACT_APP_API_URL}/categories`, {
           credentials: "include",
         });
         const data = await res.json();
@@ -35,7 +36,7 @@ function Categories() {
   const handleAddCategory = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/categories`, {
+      const res = await apiFetch(`${process.env.REACT_APP_API_URL}/categories`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -58,7 +59,7 @@ function Categories() {
   const handleDeleteCategory = async (id) => {
     if (!window.confirm("Are you sure you want to delete this category?")) return;
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/categories/${id}`, {
+      const res = await apiFetch(`${process.env.REACT_APP_API_URL}/categories/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -82,7 +83,7 @@ function Categories() {
   // Save edit
   const saveEdit = async (id) => {
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/categories/${id}`, {
+      const res = await apiFetch(`${process.env.REACT_APP_API_URL}/categories/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { apiFetch } from "../api";
 
 import CustomerNavbar from "../components/customerComponents/CustomerNavbar";
 import Footer from "../components/customerComponents/Footer";
@@ -29,7 +30,7 @@ function MyOrders() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/payment/my-orders`,
         {
           credentials: "include",
@@ -56,7 +57,7 @@ function MyOrders() {
   // ===============================
   const handleLogout = async () => {
     try {
-      await fetch(
+      await apiFetch(
         `${process.env.REACT_APP_API_URL}/auth/logout`,
         {
           method: "POST",

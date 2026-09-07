@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { addToCart } from "../redux/cartSlice";
 import { setWishlist } from "../redux/wishlistSlice";
+import { apiFetch } from "../api";
 
 import CustomerNavbar from "../components/customerComponents/CustomerNavbar";
 import Footer from "../components/customerComponents/Footer";
@@ -38,7 +39,7 @@ function ProductDetail() {
   useEffect(() => {
     async function loadWishlist() {
       try {
-        const res = await fetch(
+        const res = await apiFetch(
           `${process.env.REACT_APP_API_URL}/wishlist`,
           {
             credentials: "include",
@@ -66,7 +67,7 @@ function ProductDetail() {
       try {
         setLoading(true);
 
-        const res = await fetch(
+        const res = await apiFetch(
           `${process.env.REACT_APP_API_URL}/products/${id}`,
           {
             credentials: "include",
@@ -96,7 +97,7 @@ function ProductDetail() {
   // =============================
   const handleLogout = async () => {
     try {
-      await fetch(
+      await apiFetch(
         `${process.env.REACT_APP_API_URL}/auth/logout`,
         {
           method: "POST",
@@ -132,7 +133,7 @@ function ProductDetail() {
 
   const refreshWishlist = async () => {
     try {
-      const res = await fetch(
+      const res = await apiFetch(
         `${process.env.REACT_APP_API_URL}/wishlist`,
         {
           credentials: "include",
@@ -154,7 +155,7 @@ function ProductDetail() {
 
     try {
       if (isWishlisted) {
-        const res = await fetch(
+        const res = await apiFetch(
           `${process.env.REACT_APP_API_URL}/wishlist/${product._id}`,
           {
             method: "DELETE",
@@ -168,7 +169,7 @@ function ProductDetail() {
           await refreshWishlist();
         }
       } else {
-        const res = await fetch(
+        const res = await apiFetch(
           `${process.env.REACT_APP_API_URL}/wishlist`,
           {
             method: "POST",

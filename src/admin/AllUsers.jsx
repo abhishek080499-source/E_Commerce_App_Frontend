@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import useCountUp from "../components/hook/UseCountUp"; // ✅ countup hook import
 import Pagination from "../components/Pagination"; 
+import { apiFetch } from "../api";
 
 function AllUsers() {
   const [users, setUsers] = useState([]);
@@ -12,7 +13,7 @@ function AllUsers() {
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/users`, {
+        const res = await apiFetch(`${process.env.REACT_APP_API_URL}/users`, {
           credentials: "include",
         });
       const data = await res.json();
@@ -44,7 +45,7 @@ if (Array.isArray(data)) {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/users/${id}`, {
+      const res = await apiFetch(`${process.env.REACT_APP_API_URL}/users/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

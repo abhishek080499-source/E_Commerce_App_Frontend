@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { apiFetch } from "../api";
 
 import { setWishlist } from "../redux/wishlistSlice";
 import { addToCart } from "../redux/cartSlice";
@@ -50,7 +51,7 @@ function CustomerHome() {
         // ===============================
         // Fetch Products
         // ===============================
-        const productsRes = await fetch(
+        const productsRes = await apiFetch(
           `${process.env.REACT_APP_API_URL}/products`,
           {
             credentials: "include",
@@ -70,7 +71,7 @@ function CustomerHome() {
         // ===============================
         // Fetch Wishlist
         // ===============================
-        const wishlistRes = await fetch(
+        const wishlistRes = await apiFetch(
           `${process.env.REACT_APP_API_URL}/wishlist`,
           {
             credentials: "include",
@@ -106,7 +107,7 @@ function CustomerHome() {
   // ===============================
   const handleLogout = async () => {
     try {
-      await fetch(
+      await apiFetch(
         `${process.env.REACT_APP_API_URL}/auth/logout`,
         {
           method: "POST",

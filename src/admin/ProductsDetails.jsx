@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import useCountUp from "../components/hook/UseCountUp"; // ✅ countup hook import
 import Pagination from "../components/Pagination"; 
+import { apiFetch } from "../api"; 
 
 function ProductDetail() {
   const [products, setProducts] = useState([]);
@@ -23,7 +24,7 @@ function ProductDetail() {
 
   async function fetchProducts() {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/products`, {
+      const response = await apiFetch(`${process.env.REACT_APP_API_URL}/products`, {
         credentials: "include",
       });
       const data = await response.json();
@@ -43,7 +44,7 @@ function ProductDetail() {
   }
 async function fetchCategories() {
   try {
-    const res = await fetch(
+    const res = await apiFetch(
       `${process.env.REACT_APP_API_URL}/categories`,
       {
         credentials: "include",
